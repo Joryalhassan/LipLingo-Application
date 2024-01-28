@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1036353936566",
+    "firebase_url": "https://liplingo-49902-default-rtdb.firebaseio.com",
+    "project_id": "liplingo-49902",
+    "storage_bucket": "liplingo-49902.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036353936566:android:dc24df6bb898516fff1a17",
+        "android_client_info": {
+          "package_name": "com.example.liplingo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzZboqjghFh4zkhDzMCUaOup9GjkvUJpU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
