@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1036353936566:android:dc24df6bb898516fff1a17",
+        "mobilesdk_app_id": "1:1036353936566:android:fd691cf0a1f359e8ff1a17",
         "android_client_info": {
-          "package_name": "com.example.liplingo"
+          "package_name": "com.Swe.liplingo"
         }
       },
       "oauth_client": [],

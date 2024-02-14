@@ -1,8 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+        package="com.Swe.liplingo">
     <application
         android:label="liplingo"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:name="androidx.multidex.MultiDexApplication"
+        android:icon="@mipmap/ic_launcher"
+        >
         <activity
             android:name=".MainActivity"
             android:exported="true"

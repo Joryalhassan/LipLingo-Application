@@ -1,0 +1,9 @@
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/Liplingo_Logo.jpg
+
+  android_12:
+    color: "#FFFFFF"
+    image: assets/Liplingo_Logo.jpg
+
+  web: false
