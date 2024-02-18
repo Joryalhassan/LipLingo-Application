@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liplingo/screens/EditProfile.dart';
 import 'package:liplingo/screens/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -15,9 +16,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
- 
-      home: SignUpScreen(),
+      home: EditProfileScreen(),
     );
   }
 }
-
