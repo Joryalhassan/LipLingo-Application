@@ -6,14 +6,14 @@ class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   late Size mediaSize;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _FnameTextController = TextEditingController();
-  final TextEditingController _LnameTextController = TextEditingController();
+  final TextEditingController _fnameTextController = TextEditingController();
+  final TextEditingController _lnameTextController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   String _userEmail = ''; // To store user's email
   Color _fieldBackgroundColor = Colors.white;
@@ -42,8 +42,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               .get();
 
       setState(() {
-        _FnameTextController.text = userData['first_name'] ?? '';
-        _LnameTextController.text = userData['last_name'] ?? '';
+        _fnameTextController.text = userData['first_name'] ?? '';
+        _lnameTextController.text = userData['last_name'] ?? '';
         _usernameController.text = userData['username'] ?? '';
       });
     }
@@ -55,6 +55,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Profile'),
+        backgroundColor: Colors.blue, // Matching the color from the second code
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -83,16 +84,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               style: TextStyle(color: Colors.blue),
             ),
           ),
-          _buildEditableField('First Name', _FnameTextController),
-          _buildEditableField('Last Name', _LnameTextController),
+          _buildEditableField('First Name', _fnameTextController),
+          _buildEditableField('Last Name', _lnameTextController),
           _buildNonEditableField('Email', _userEmail),
           _buildEditableField('Username', _usernameController),
           Expanded(
-              child:
-                  SizedBox()), // Spacer to push Save Changes button to the bottom
+            child: SizedBox(),
+          ), // Spacer to push Save Changes button to the bottom
           ElevatedButton(
             onPressed: _saveChanges,
             child: Text('Save Changes'),
+            style: ElevatedButton.styleFrom(
+              primary: Colors.blue, // Matching the color from the second code
+            ),
           ),
         ],
       ),
@@ -149,8 +153,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
-          'first_name': _FnameTextController.text.trim(),
-          'last_name': _LnameTextController.text.trim(),
+          'first_name': _fnameTextController.text.trim(),
+          'last_name': _lnameTextController.text.trim(),
           'username': _usernameController.text.trim(),
         });
 
