@@ -117,8 +117,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             setState(() {
-              _fieldBackgroundColor =
-                  Colors.amberAccent; // Change to desired color
+              _fieldBackgroundColor = const Color.fromARGB(
+                  255, 208, 207, 204); // Change to desired color
             });
             return '$label is required';
           }
