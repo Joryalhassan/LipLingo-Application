@@ -15,31 +15,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _fnameTextController = TextEditingController();
   final TextEditingController _lnameTextController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
-  String _userEmail = ''; // To store user's email
+  String _userEmail = '';
   Color _fieldBackgroundColor = Colors.white;
 
   @override
   void initState() {
     super.initState();
-    // Fetch user data and set initial values
     _fetchUserData();
   }
 
   Future<void> _fetchUserData() async {
-    // Fetch user data from Firestore or another source
-    // Example: Fetching user data using Firebase Authentication
     User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       setState(() {
         _userEmail = user.email ?? '';
       });
 
-      // Fetch additional user data from Firestore based on user's UID
-      DocumentSnapshot<Map<String, dynamic>> userData =
-          await FirebaseFirestore.instance
-              .collection('Users') // Adjust collection name as needed
-              .doc(user.uid)
-              .get();
+      DocumentSnapshot<Map<String, dynamic>> userData = await FirebaseFirestore
+          .instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
 
       setState(() {
         _fnameTextController.text = userData['first_name'] ?? '';
@@ -54,51 +50,94 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     mediaSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Profile'),
-        backgroundColor: Colors.blue, // Matching the color from the second code
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.blue),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(color: Colors.black),
+        ),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _buildForm(),
-      ),
-    );
-  }
-
-  Widget _buildForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage(
-                'assets/default_profile_picture.jpg'), // Replace with user's profile picture
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color.fromARGB(255, 223, 223, 223),
+              const Color.fromARGB(255, 223, 223, 223),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              // Implement photo change functionality
-            },
-            child: Text(
-              'Change Photo',
-              style: TextStyle(color: Colors.blue),
-            ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage:
+                    AssetImage('assets/default_profile_picture.jpg'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Implement photo change functionality
+                },
+                child: Text(
+                  'Change Photo',
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+              _buildEditableField('First Name', _fnameTextController),
+              _buildEditableField('Last Name', _lnameTextController),
+              _buildNonEditableField('Email', _userEmail),
+              _buildEditableField('Username', _usernameController),
+              SizedBox(height: 16), // Add space between fields and buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _cancelChanges,
+                    child: Container(
+                      height: 50,
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      minimumSize: Size(150, 50),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  ElevatedButton(
+                    onPressed: _saveChanges,
+                    child: Container(
+                      height: 50,
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Save Changes',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      minimumSize: Size(150, 50),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          _buildEditableField('First Name', _fnameTextController),
-          _buildEditableField('Last Name', _lnameTextController),
-          _buildNonEditableField('Email', _userEmail),
-          _buildEditableField('Username', _usernameController),
-          Expanded(
-            child: SizedBox(),
-          ), // Spacer to push Save Changes button to the bottom
-          ElevatedButton(
-            onPressed: _saveChanges,
-            child: Text('Save Changes'),
-            style: ElevatedButton.styleFrom(
-              primary: Colors.blue, // Matching the color from the second code
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -121,8 +160,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             setState(() {
-              _fieldBackgroundColor = const Color.fromARGB(
-                  255, 208, 207, 204); // Change to desired color
+              _fieldBackgroundColor = const Color.fromARGB(255, 208, 207, 204);
             });
             return '$label is required';
           }
@@ -137,7 +175,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         initialValue: value,
-        enabled: false, // Make it non-editable
+        enabled: false,
         decoration: InputDecoration(
           labelText: label,
           filled: true,
@@ -147,9 +185,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  void _cancelChanges() {
+    Navigator.pop(context);
+  }
+
   void _saveChanges() {
     if (_formKey.currentState!.validate()) {
-      // Update user data in Firestore or another source
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
@@ -158,7 +199,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'username': _usernameController.text.trim(),
         });
 
-        // Show success message or navigate to another screen
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Profile updated successfully')),
         );
