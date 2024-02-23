@@ -70,8 +70,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(255, 243, 243, 243),
-              const Color.fromARGB(255, 243, 243, 243),
+              Colors.grey[200]!,
+              Colors.grey[200]!,
             ],
           ),
         ),
@@ -142,30 +142,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  void _cancelChanges() {
+    Navigator.pop(context);
+  }
+
   Widget _buildEditableField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: _fieldBackgroundColor,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: _fieldBackgroundColor,
         ),
-        onChanged: (_) {
-          setState(() {
-            _fieldBackgroundColor = Colors.white;
-          });
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
+        child: TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(16.0),
+          ),
+          onChanged: (_) {
             setState(() {
-              _fieldBackgroundColor = const Color.fromARGB(255, 208, 207, 204);
+              _fieldBackgroundColor = Colors.white;
             });
-            return '$label is required';
-          }
-          return null;
-        },
+          },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              setState(() {
+                _fieldBackgroundColor =
+                    const Color.fromARGB(255, 208, 207, 204);
+              });
+              return '$label is required';
+            }
+            return null;
+          },
+        ),
       ),
     );
   }
@@ -173,20 +184,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildNonEditableField(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextFormField(
-        initialValue: value,
-        enabled: false,
-        decoration: InputDecoration(
-          labelText: label,
-          filled: true,
-          fillColor: _fieldBackgroundColor,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: _fieldBackgroundColor,
+        ),
+        child: TextFormField(
+          initialValue: value,
+          enabled: false,
+          decoration: InputDecoration(
+            labelText: label,
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.all(16.0),
+          ),
         ),
       ),
     );
-  }
-
-  void _cancelChanges() {
-    Navigator.pop(context);
   }
 
   void _saveChanges() {
