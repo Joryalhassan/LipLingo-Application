@@ -70,8 +70,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color.fromARGB(255, 223, 223, 223),
-              const Color.fromARGB(255, 223, 223, 223),
+              Color.fromARGB(255, 243, 243, 243),
+              const Color.fromARGB(255, 243, 243, 243),
             ],
           ),
         ),
