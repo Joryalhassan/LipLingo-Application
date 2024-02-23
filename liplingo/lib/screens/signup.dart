@@ -17,14 +17,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _FnameTextController = TextEditingController();
   final TextEditingController _LnameTextController = TextEditingController();
   final TextEditingController _confirmPasswordTextController = TextEditingController();
-  final TextEditingController _usernamecontroller = TextEditingController();
+ 
   //For password list
   bool _hasMinLength = false;
   bool _hasUppercase = false;
   bool _hasLowercase = false;
   bool _hasNumber = false;
  String? _emailErrorMessage;
- String ? _usrnameErrorMessage;
+
 
    Future<bool> _checkEmailUniqueness(String email) async {
     try {
@@ -37,16 +37,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  Future<bool> _checkUsernameUniqueness(String username) async {
-    final QuerySnapshot result = await FirebaseFirestore.instance
-      .collection('users') // Ensure this matches your collection name
-      .where('username', isEqualTo: username)
-      .limit(1)
-      .get();
 
-    // If the query returns no documents, the username is unique
-    return result.docs.isEmpty;
-  }
 
 
   @override
@@ -122,13 +113,7 @@ Widget _buildForm() {
                 ),
               ],
             ),
-            SizedBox(height: 10),
-            _buildLabeledInputField(
-              label: "Username",
-              controller: _usernamecontroller,
-              hintText: "ex: Sara.23",
-              icon: Icons.alternate_email,
-            ),
+       
             SizedBox(height: 10),
             _buildLabeledInputField(
               label: "Email",
@@ -219,29 +204,21 @@ Widget _buildRegisterButton() {
         // Clear previous error messages
         setState(() {
           _emailErrorMessage = null;
-          _usrnameErrorMessage = null;
+       
          
         });
 
         // Perform synchronous validation first
         if (_formKey.currentState!.validate()) {
-          // Perform asynchronous checks for email and username uniqueness
+          // Perform asynchronous checks for email unique
           bool isEmailUnique = await _checkEmailUniqueness(_emailTextController.text);
-          bool isUsernameUnique = await _checkUsernameUniqueness(_usernamecontroller.text);
-          
-          // Act based on the results of the asynchronous checks
-          if (!isEmailUnique || !isUsernameUnique) {
-            
+
             if (!isEmailUnique) {
               setState(() {
                 _emailErrorMessage = "Email has been used";
               });
             }
-            // For username
-            if (!isUsernameUnique) {
-              _usrnameErrorMessage = "Username has been used";
-            }
-          } else {
+           else {
             // If both email and username are unique, proceed with the registration
             try {
                UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -254,7 +231,6 @@ Widget _buildRegisterButton() {
             await FirebaseFirestore.instance.collection('Users').doc(uid).set({
               'first_name': _FnameTextController.text.trim(),
               'last_name': _LnameTextController.text.trim(),
-              'username': _usernamecontroller.text.trim(),
               'email': _emailTextController.text.trim(),
             });
 
@@ -408,14 +384,7 @@ Widget _buildTextInput({
           }
      
     break;
-        case 'Username':
-          if (value!.length < 5 || value.length > 12) {
-            return 'Username must be between 5 and 12 \n characters';
-          }
-          if(_usrnameErrorMessage != null){
-            return _usrnameErrorMessage;
-          }
-          break;
+       
         case 'Email':
           if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value!)) {
             return 'Enter a valid email address';
