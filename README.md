@@ -3,7 +3,7 @@ LipLingo
 
 # Project Collaborators:
 - **Jory Alhassan**
-- **Nada alQabbani**
+- **Nada AlQabbani**
 - **Alanood Abanumy**
 - **Adwa Alangari**
 - **Danh Alkhalaf**
