@@ -101,6 +101,15 @@ class AccountSettingsScreen extends StatelessWidget {
 
   Widget _buildClickableOption(BuildContext context, String text, IconData icon,
       VoidCallback onTapCallback) {
+    Color textColor = Colors.black; // Default text color
+    Color iconColor = Colors.black; // Default icon color
+
+    // Customize text and icon colors for "Delete Account" and "Log Out"
+    if (text == 'Delete Account' || text == 'Log Out') {
+      textColor = Colors.red;
+      iconColor = Colors.red;
+    }
+
     return GestureDetector(
       onTap: onTapCallback,
       child: Container(
@@ -119,11 +128,17 @@ class AccountSettingsScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon),
+            Icon(
+              icon,
+              color: iconColor, // Set icon color
+            ),
             SizedBox(width: 16),
             Text(
               text,
-              style: TextStyle(fontSize: 18),
+              style: TextStyle(
+                fontSize: 18,
+                color: textColor, // Set text color
+              ),
             ),
           ],
         ),
