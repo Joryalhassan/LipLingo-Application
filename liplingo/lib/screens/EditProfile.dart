@@ -82,18 +82,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage:
-                    AssetImage('assets/default_profile_picture.jpg'),
+                backgroundImage: AssetImage('assets/AppBar_Profile.png'),
               ),
-              TextButton(
-                onPressed: () {
-                  // Implement photo change functionality
-                },
-                child: Text(
-                  'Change Photo',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ),
+
               _buildEditableField('First Name', _fnameTextController),
               _buildEditableField('Last Name', _lnameTextController),
               _buildNonEditableField('Email', _userEmail),

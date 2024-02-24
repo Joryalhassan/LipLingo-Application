@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:liplingo/screens/academy.dart';
 import 'package:liplingo/screens/lipReading.dart';
 import 'package:liplingo/screens/signIn.dart';
+import 'package:liplingo/screens/AccountSettings.dart';
 
 // Text field
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
@@ -82,6 +83,11 @@ AppBar topBar(BuildContext context, String screenName) {
         )),
     leading: IconButton(
       onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => (AccountSettingsScreen()),
+          ),
+        );
         // Redirect to user profile page.
       },
       icon: ImageIcon(

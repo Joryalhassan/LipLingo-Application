@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'EditProfile.dart'; // Import your EditProfileScreen file
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:liplingo/screens/SignIn.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
   @override
@@ -55,53 +56,6 @@ class AccountSettingsScreen extends StatelessWidget {
   }
 
   Widget _buildUserProfileSection(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EditProfileScreen()));
-      },
-      child: Container(
-        padding: EdgeInsets.all(26),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.0),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: AssetImage('assets/default_profile_picture.jpg'),
-            ),
-            SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Username', // Replace with actual username
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Edit Profile',
-                  style: TextStyle(color: Colors.blue),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /*Widget _buildUserProfileSection(BuildContext context) {
     return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       future: _fetchUserData(),
       builder: (context, snapshot) {
@@ -138,8 +92,7 @@ class AccountSettingsScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage:
-                        AssetImage('assets/default_profile_picture.jpg'),
+                    backgroundImage: AssetImage('assets/AppBar_Profile.png'),
                   ),
                   SizedBox(width: 16),
                   Column(
@@ -178,7 +131,7 @@ class AccountSettingsScreen extends StatelessWidget {
     } else {
       throw Exception('User not found');
     }
-  }*/
+  }
 
   Widget _buildClickableOption(BuildContext context, String text, IconData icon,
       VoidCallback onTapCallback) {
@@ -245,7 +198,8 @@ class AccountSettingsScreen extends StatelessWidget {
   }
 
   void _onLogOut() {
-    // Replace with the logic to handle logout
+    //_signOut();
+
     print('Log Out');
   }
 
@@ -253,4 +207,13 @@ class AccountSettingsScreen extends StatelessWidget {
     // Replace with the logic to handle account deletion
     print('Delete Account');
   }
+}
+
+Future<void> _signOut(context) async {
+  await FirebaseAuth.instance.signOut();
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => SignInScreen()),
+  );
 }
