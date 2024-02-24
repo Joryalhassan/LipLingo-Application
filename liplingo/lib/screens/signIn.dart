@@ -15,9 +15,6 @@ class _SignInScreenState extends State<SignInScreen> {
   // Initialize Firebase Authentication
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Initialize Firestore
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
   // Initialize the form key
   final _formKey = GlobalKey<FormState>();
 
@@ -49,7 +46,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> _signInWithEmailAndPassword() async {
     try {
       // Log user in through firebase auth function.
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );

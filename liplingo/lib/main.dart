@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/screens/Academy.dart';
 import 'package:liplingo/screens/signIn.dart';
 import 'package:firebase_core/firebase_core.dart';
 
