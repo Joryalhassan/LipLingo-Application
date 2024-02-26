@@ -16,7 +16,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _lnameTextController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   String _userEmail = '';
+  late String _originalFirstName;
+  late String _originalLastName;
+  late String _originalUsername;
   Color _fieldBackgroundColor = Colors.white;
+  bool _changesMade = false;
 
   @override
   void initState() {
@@ -41,6 +45,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _fnameTextController.text = userData['first_name'] ?? '';
         _lnameTextController.text = userData['last_name'] ?? '';
         _usernameController.text = userData['username'] ?? '';
+
+        _originalFirstName = _fnameTextController.text;
+        _originalLastName = _lnameTextController.text;
+        _originalUsername = _usernameController.text;
       });
     }
   }
@@ -52,12 +60,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.blue),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         title: Text(
           'Edit Profile',
           style: TextStyle(color: Colors.black),
@@ -77,56 +79,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage('assets/AppBar_Profile.png'),
-              ),
-
-              _buildEditableField('First Name', _fnameTextController),
-              _buildEditableField('Last Name', _lnameTextController),
-              _buildNonEditableField('Email', _userEmail),
-              _buildEditableField('Username', _usernameController),
-              SizedBox(height: 16), // Add space between fields and buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: _cancelChanges,
-                    child: Container(
-                      height: 50,
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.white),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/AppBar_Profile.png'),
+                ),
+                _buildEditableField('First Name', _fnameTextController),
+                _buildEditableField('Last Name', _lnameTextController),
+                _buildNonEditableField('Email', _userEmail),
+                _buildEditableField('Username', _usernameController),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_changesMade) {
+                          _showDiscardChangesDialog();
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        minimumSize: Size(150, 50),
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
-                      minimumSize: Size(150, 50),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: _saveChanges,
-                    child: Container(
-                      height: 50,
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Save Changes',
-                        style: TextStyle(color: Colors.white),
+                    SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: _saveChanges,
+                      child: Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Save Changes',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.blue,
+                        minimumSize: Size(150, 50),
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
-                      minimumSize: Size(150, 50),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -134,7 +145,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _cancelChanges() {
-    Navigator.pop(context);
+    setState(() {
+      _fnameTextController.text = _originalFirstName;
+      _lnameTextController.text = _originalLastName;
+      _usernameController.text = _originalUsername;
+      _fieldBackgroundColor = Colors.white;
+      _changesMade = false;
+    });
   }
 
   Widget _buildEditableField(String label, TextEditingController controller) {
@@ -155,6 +172,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           onChanged: (_) {
             setState(() {
               _fieldBackgroundColor = Colors.white;
+              _changesMade = true;
             });
           },
           validator: (value) {
@@ -193,6 +211,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  void _showDiscardChangesDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Discard Changes?'),
+          content: Text('Are you sure you want to discard changes?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {},
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _cancelChanges();
+                Navigator.pop(context);
+              },
+              child: Text('Discard'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _saveChanges() {
     if (_formKey.currentState!.validate()) {
       User? user = FirebaseAuth.instance.currentUser;
@@ -204,8 +247,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Profile updated successfully')),
+          SnackBar(
+            content: Text('Profile updated successfully'),
+            backgroundColor: Colors.blue,
+          ),
         );
+
+        setState(() {
+          _originalFirstName = _fnameTextController.text;
+          _originalLastName = _lnameTextController.text;
+          _originalUsername = _usernameController.text;
+          _changesMade = false;
+        });
       }
     }
   }
