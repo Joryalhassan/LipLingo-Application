@@ -3,6 +3,7 @@ import 'EditProfile.dart'; // Import your EditProfileScreen file
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:liplingo/screens/SignIn.dart';
+import 'package:liplingo/screens/Help.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
   @override
@@ -36,7 +37,8 @@ class AccountSettingsScreen extends StatelessWidget {
                 _buildClickableOption(
                     context, 'Contact Us', Icons.mail, _onContactUs),
                 SizedBox(height: 16), // Add space between options
-                _buildClickableOption(context, 'Help', Icons.help, _onHelp),
+                _buildClickableOption(
+                    context, 'Help', Icons.help, () => _onHelp(context)),
 
                 // Space
                 SizedBox(height: 60),
@@ -192,9 +194,11 @@ class AccountSettingsScreen extends StatelessWidget {
     print('Contact Us');
   }
 
-  void _onHelp() {
-    // Replace with the logic to navigate to Help page
-    print('Help');
+  void _onHelp(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => HelpScreen()),
+    );
   }
 
   void _onLogOut() {
