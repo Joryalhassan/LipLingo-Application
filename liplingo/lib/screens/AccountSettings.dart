@@ -46,10 +46,11 @@ class AccountSettingsScreen extends StatelessWidget {
 
                 // Clickable Options - Log Out, Delete Account
                 _buildClickableOption(
-                    context, 'Log Out', Icons.logout, _onLogOut),
+                    context, 'Log Out', Icons.logout, () => _onLogOut(context)),
+
                 SizedBox(height: 16), // Add space between options
-                _buildClickableOption(
-                    context, 'Delete Account', Icons.delete, _onDeleteAccount),
+                _buildClickableOption(context, 'Delete Account', Icons.delete,
+                    () => _onDeleteAccount(context)),
               ],
             ),
           ),
@@ -204,7 +205,7 @@ class AccountSettingsScreen extends StatelessWidget {
     } catch (e) {
       print('Error launching email client: $e');
     }
-  }
+  } // remove try-catch if it workes on physical emulator
 
   void _onHelp(BuildContext context) {
     Navigator.push(
@@ -213,23 +214,68 @@ class AccountSettingsScreen extends StatelessWidget {
     );
   }
 
-  void _onLogOut() {
-    //_signOut();
-
-    print('Log Out');
+  void _onLogOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                SignInScreen()), // Navigate to your SignIn screen
+      );
+    } catch (e) {
+      print('Error logging out: $e');
+    }
   }
 
-  void _onDeleteAccount() {
-    // Replace with the logic to handle account deletion
-    print('Delete Account');
+  void _onDeleteAccount(BuildContext context) async {
+    // Show a confirmation dialog
+    bool confirmDelete = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete your account?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), // No
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), // Yes
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmDelete == true) {
+      try {
+        User? user = FirebaseAuth.instance.currentUser;
+
+        if (user != null) {
+          // Delete user data from Firestore
+          await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(user.uid)
+              .delete();
+
+          // Delete the user account
+          await user.delete();
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    SignInScreen()), // Navigate to your SignIn screen
+          );
+        } else {
+          print('User not found');
+        }
+      } catch (e) {
+        print('Error deleting account: $e');
+      }
+    }
   }
-}
-
-Future<void> _signOut(context) async {
-  await FirebaseAuth.instance.signOut();
-
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => SignInScreen()),
-  );
 }
