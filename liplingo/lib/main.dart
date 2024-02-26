@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/screens/signup.dart';
+import 'package:liplingo/screens/signIn.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
  
-      home: SignUpScreen(),
+      home: SignInScreen(),
     );
   }
 }

@@ -65,7 +65,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
      - assets/Liplingo_Logo.jpg
-  
+     - assets/AppBar_Profile.png
+     - assets/LogIn_EclipseDesign.png
+     - assets/NavBar_Academy.png
+     - assets/NavBar_LipReading.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:liplingo/screens/signIn.dart';
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -23,8 +23,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _hasUppercase = false;
   bool _hasLowercase = false;
   bool _hasNumber = false;
+  //emailvalidator
  String? _emailErrorMessage;
-
+ //passwordVisability
+ bool _passwordVisible = false;
+bool _confirmPasswordVisible = false;
 
    Future<bool> _checkEmailUniqueness(String email) async {
     try {
@@ -96,7 +99,7 @@ Widget _buildForm() {
               children: [
                 Expanded(
                   child: _buildLabeledInputField(
-                    label: "First Name",
+                    label: "First Name:",
                     controller: _FnameTextController,
                     hintText: "ex: Sara",
                     icon: Icons.person,
@@ -105,7 +108,7 @@ Widget _buildForm() {
                 SizedBox(width: 10), // Space between the fields
                 Expanded(
                   child: _buildLabeledInputField(
-                    label: "Last Name",
+                    label: "Last Name:",
                     controller: _LnameTextController,
                     hintText: "ex: Alfattah",
                     icon: Icons.person,
@@ -114,9 +117,9 @@ Widget _buildForm() {
               ],
             ),
        
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             _buildLabeledInputField(
-              label: "Email",
+              label: "Email:",
               controller: _emailTextController,
               hintText: "example@example.com",
               icon: Icons.email,
@@ -132,11 +135,11 @@ Widget _buildForm() {
     return null;
   },
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 15),
             _buildPasswordField(), // Modified to handle password field and conditions
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             _buildLabeledInputField(
-              label: "Confirm Password",
+              label: "Confirm Password:",
               controller: _confirmPasswordTextController,
               hintText: "******",
               icon: Icons.lock,
@@ -244,10 +247,14 @@ Widget _buildRegisterButton() {
                   content: Text("You have signed up successfully!"),
                   actions: <Widget>[
                     TextButton(
+                        style: TextButton.styleFrom(
+            primary: Colors.white, // Text Color
+            backgroundColor: Colors.blue, // Button background color
+          ),
                       child: Text("Okay"),
                       onPressed: () {
                        
-                        //Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => SigIn()), (Route<dynamic> route) => false);
+                        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => SignInScreen()), (Route<dynamic> route) => false);
                       },
                     ),
                   ],
@@ -281,7 +288,7 @@ Widget _buildPasswordField() {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       _buildLabeledInputField(
-        label: "Password",
+        label: "Password:",
         controller: _passwordTextController,
         hintText: "******",
         icon: Icons.lock,
@@ -305,7 +312,7 @@ Widget _buildPasswordField() {
         },
       ),
       Padding(
-        padding: const EdgeInsets.only(left: 40),
+        padding: const EdgeInsets.only(top:10,left: 40),
         child: _buildPasswordConditions(),
       ),
     ],
@@ -351,14 +358,35 @@ Widget _buildTextInput({
   TextInputType keyboardType = TextInputType.text,
   void Function(String)? onChanged,
 }) {
+  // Determine if the current field is the password or confirm password field
+  bool isPasswordField = label.toLowerCase().contains("password");
   return TextFormField(
     controller: controller,
-    obscureText: isPassword,
+    obscureText: isPassword ? (isPasswordField ? !_passwordVisible : !_confirmPasswordVisible) : false,
     keyboardType: keyboardType,
     autovalidateMode: AutovalidateMode.onUserInteraction, // Validate while typing
     decoration: InputDecoration(
       hintText: hintText,
       prefixIcon: Icon(icon),
+      // Conditionally add a suffix icon for password fields
+      suffixIcon: isPassword
+          ? IconButton(
+              icon: Icon(
+                // Toggle the icon based on the visibility state
+                isPasswordField ? (_passwordVisible ? Icons.visibility : Icons.visibility_off) : (_confirmPasswordVisible ? Icons.visibility : Icons.visibility_off),
+              ),
+              onPressed: () {
+                setState(() {
+                  // Toggle the visibility state
+                  if (isPasswordField) {
+                    _passwordVisible = !_passwordVisible;
+                  } else {
+                    _confirmPasswordVisible = !_confirmPasswordVisible;
+                  }
+                });
+              },
+            )
+          : null,
       filled: true,
       fillColor: Colors.grey[200],
       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 15),
@@ -366,7 +394,7 @@ Widget _buildTextInput({
         borderRadius: BorderRadius.circular(30),
         borderSide: BorderSide.none,
       ),
-      errorStyle: TextStyle(color: Colors.red), 
+      errorStyle: TextStyle(color: Colors.red),
     ),
     validator: (value) {
       
