@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:liplingo/screens/SignIn.dart';
 import 'package:liplingo/screens/Help.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
   @override
@@ -189,9 +190,20 @@ class AccountSettingsScreen extends StatelessWidget {
     print('Clear Text Data');
   }
 
-  void _onContactUs() {
-    // Replace with the logic to navigate to Contact Us page
-    print('Contact Us');
+  void _onContactUs() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'lipLingo@gmail.com',
+      queryParameters: {'subject': 'Contact Us'},
+    );
+
+    final String emailUri = emailLaunchUri.toString();
+
+    try {
+      await launch(emailUri);
+    } catch (e) {
+      print('Error launching email client: $e');
+    }
   }
 
   void _onHelp(BuildContext context) {
