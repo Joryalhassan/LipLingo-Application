@@ -39,7 +39,7 @@ Container signInSignUpButton(BuildContext context, bool isLogin, Function onTap)
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
     child: ElevatedButton(
       onPressed: () {
-        onTap(); // Corrected from 'onTap()' to 'onTap()'
+        onTap(); 
       },
       child: Text(
         isLogin ? 'LOG IN' : 'SIGN UP',
