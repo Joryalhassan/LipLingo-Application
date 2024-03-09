@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:liplingo/screens/signIn.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:liplingo/screens/questions.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure plugins are initialized
   await Firebase.initializeApp(); // Initialize Firebase
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
  
-      home: SignInScreen(),
+      home: Questions(),
     );
   }
 }
