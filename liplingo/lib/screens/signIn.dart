@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:liplingo/screens/lipReading.dart';
+import 'package:liplingo/screens/resetPassword.dart';
 import 'package:liplingo/screens/signup.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -14,10 +15,10 @@ class _SignInScreenState extends State<SignInScreen> {
   // Initialize Firebase Authentication
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Initialize the form key
-  final _formKey = GlobalKey<FormState>();
+  // Initialize the form key for both forms
+  final _formKeySignIn = GlobalKey<FormState>();
 
-  // Text Editing Controllers for email and password
+  //Text Editing Controllers for email and password
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -50,20 +51,24 @@ class _SignInScreenState extends State<SignInScreen> {
         password: _passwordController.text.trim(),
       );
 
-      //Redirect to lipreading screen.
+      //Redirect to LipReading screen if no error encountered
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LipReadingScreen()));
-
     } on FirebaseAuthException catch (e) {
       // Handle errors
       setState(() {
         // Handle different types of FirebaseAuth errors
-        if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        if (e.code == 'user-not-found' ||
+            e.code == 'wrong-password' ||
+            e.code == 'invalid-credential') {
           // Update error message for incorrect login
           _errorMessage = "Invalid Email or Password";
+        } else if(e.code == 'network-request-failed' ) {
+          // Update error message for no internet connection
+          _errorMessage = "No internet connection";
         } else {
-          // Handle other types of FirebaseAuthException errors
-          _errorMessage = "There's been an error. Try again later";
+        // Handle other types of FirebaseAuthException errors
+        _errorMessage = "There's been an error. Try again later";
         }
       });
     }
@@ -101,7 +106,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
               // Sign In Form
               Form(
-                key: _formKey,
+                key: _formKeySignIn,
                 child: Container(
                   padding: EdgeInsets.fromLTRB(45, 20, 45, 0),
                   child: Column(
@@ -189,7 +194,18 @@ class _SignInScreenState extends State<SignInScreen> {
                       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                         TextButton(
                           onPressed: () {
-                            // Forgot password logic
+                            showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                showDragHandle: true,
+                                useSafeArea: true,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(15)),
+                                ),
+                                builder: (context) {
+                                  return resetPassword();
+                                });
                           },
                           child: Text(
                             "Forgot Password?",
@@ -199,6 +215,30 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                       ]),
+                      Align(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: 230,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKeySignIn.currentState!.validate()) {
+                                _signInWithEmailAndPassword();
+                              }
+                            },
+                            child: Text(
+                              "Log In",
+                              style: TextStyle(fontSize: 17),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       if (_errorMessage != null)
                         Align(
                           alignment: Alignment.center,
@@ -207,26 +247,6 @@ class _SignInScreenState extends State<SignInScreen> {
                             style: TextStyle(color: Colors.red),
                           ),
                         ),
-                      const SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 170,
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _signInWithEmailAndPassword();
-                              }
-                            },
-                            child: Text(
-                              "Log In",
-                              style: TextStyle(fontSize: 17),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 25),
                         child: Row(
@@ -257,5 +277,3 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
-
-

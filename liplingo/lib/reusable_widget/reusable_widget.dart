@@ -31,7 +31,7 @@ TextField reusableTextField(String text, IconData icon, bool isPasswordType, Tex
 
 
 //sign up+in buttons
-Container signInSignUpButton(BuildContext context, bool isLogin, Function onTap) {
+Container signInSignUpButton(BuildContext context, String buttonText, Function onTap) {
   return Container(
     width: MediaQuery.of(context).size.width,
     height: 50,
@@ -42,7 +42,8 @@ Container signInSignUpButton(BuildContext context, bool isLogin, Function onTap)
         onTap(); // Corrected from 'onTap()' to 'onTap()'
       },
       child: Text(
-        isLogin ? 'LOG IN' : 'SIGN UP',
+        buttonText,
+        //buttonText
         style: const TextStyle(
           color: Colors.white70,
           fontWeight: FontWeight.bold,

@@ -2,9 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../reusable_widget/reusable_widget.dart';
 
-class LipReadingScreen extends StatelessWidget {
-  const LipReadingScreen({super.key});
+class LipReadingScreen extends StatefulWidget {
+  const LipReadingScreen({Key? key}) : super(key: key);
 
+  @override
+  LipReadingScreenState createState() => LipReadingScreenState();
+}
+
+class LipReadingScreenState extends State<LipReadingScreen> {
   @override
   Widget build(BuildContext context) {
     //Logged In user's infromation
@@ -26,4 +31,5 @@ class LipReadingScreen extends StatelessWidget {
       bottomNavigationBar: bottomBar(context, 0),
     );
   }
+
 }
