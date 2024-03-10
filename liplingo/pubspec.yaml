@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  chewie: ^1.7.5
+  video_player: ^2.8.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -43,6 +45,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+    
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -69,6 +72,9 @@ flutter:
      - assets/LogIn_EclipseDesign.png
      - assets/NavBar_Academy.png
      - assets/NavBar_LipReading.png
+     - assets/book.png
+     - assets/challenge.png
+     - assets/try.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
