@@ -40,6 +40,7 @@ dependencies:
   cloud_firestore: ^4.14.0
   firebase_core: ^2.24.2
   video_player: ^2.8.2
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
@@ -70,9 +71,14 @@ flutter:
      - assets/LogIn_EclipseDesign.png
      - assets/NavBar_Academy.png
      - assets/NavBar_LipReading.png
+     - assets/Academy_ChallengesIcon.png
+     - assets/Academy_LessonIcon.png
      - assets/Q1-ball.mp4
      - assets/Q2-dad.mp4
      - assets/Q3-blue.mp4
+     - assets/Q4-the.mp4
+     - assets/Q5-three.mp4
+     - assets/Q6-bus.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

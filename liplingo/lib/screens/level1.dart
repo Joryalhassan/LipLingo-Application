@@ -1,40 +1,38 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:liplingo/screens/checkpage.dart'; // Ensure you have these screens set up
-
-class Questions extends StatefulWidget {
+import 'package:liplingo/screens/checkpage.dart'; 
+import 'package:liplingo/screens/challengResult.dart';
+class Level1 extends StatefulWidget {
   @override
-  _QuestionsState createState() => _QuestionsState();
+  _Level1State createState() => _Level1State();
 }
 
-class _QuestionsState extends State<Questions> {
+class _Level1State extends State<Level1> {
   late VideoPlayerController _videoController;
   bool _isPlaying = false;
   bool _hasMadeChoice = false;
   String? _selectedChoice;
   int _currentQuestionIndex = 0;
+  int _correctAnswersCount = 0; // Counter for the number of correct answers
   List<Map<String, dynamic>> _questionsData = [
     {
       'videoAsset': 'assets/Q1-ball.mp4',
       'questionText': 'Select what did she say?',
       'choices': ['Ball', 'Bag', 'Hole'],
       'correctChoice': 'Ball',
-      'starsColor': Colors.grey,
     },
     {
       'videoAsset': 'assets/Q2-dad.mp4',
       'questionText': 'Select what did she say?',
       'choices': ['Doll', 'Dad', 'Sad'],
       'correctChoice': 'Dad',
-      'starsColor': Colors.yellow[600],
     },
     {
       'videoAsset': 'assets/Q3-blue.mp4',
       'questionText': 'Select what did she say?',
       'choices': ['Puzzle', 'Cow', 'Blue'],
       'correctChoice': 'Blue',
-      'starsColor': Colors.yellow[600],
     },
   ];
 
@@ -63,10 +61,51 @@ class _QuestionsState extends State<Questions> {
     }
   }
 
+  void resetQuiz() {
+  setState(() {
+    _currentQuestionIndex = 0;
+    _correctAnswersCount = 0;
+    _hasMadeChoice = false;
+    _selectedChoice = null;
+    _videoController.dispose();
+    _initVideoPlayer();
+  });
+}
+
   @override
   void dispose() {
     _videoController.dispose();
     super.dispose();
+  }
+
+  double get _progressValue {
+    // Adjust the formula to match the custom progression logic
+    switch (_currentQuestionIndex) {
+      case 0:
+        return 0; // For the first question, 0%
+      case 1:
+        return 1 / 3; // For the second question, 33%
+      default:
+        return 2 / 3; // For the third question, 66%
+    }
+  }
+
+  List<Widget> _buildStars(BuildContext context) {
+    // Determine how many stars should be colored based on _correctAnswersCount
+    List<Widget> stars = [];
+    for (int i = 0; i < 3; i++) {
+      stars.add(
+        Icon(
+          Icons.star,
+          color: i < _correctAnswersCount ? Colors.yellow[600] : Colors.grey,
+          size: MediaQuery.of(context).size.height * 0.04,
+        ),
+      );
+      if (i < 2) { // Add spacing between stars, but not after the last one
+        stars.add(SizedBox(width: MediaQuery.of(context).size.width * 0.01));
+      }
+    }
+    return stars;
   }
 
   @override
@@ -83,22 +122,16 @@ class _QuestionsState extends State<Questions> {
         title: ClipRRect(
           borderRadius: BorderRadius.circular(45),
           child: SizedBox(
-            height: screenHeight * 0.025,
+            height: screenHeight * 0.01,
+            width: screenWidth * 1.0,
             child: LinearProgressIndicator(
-              value: 0.7, // Example progress value
+              value: _progressValue, // Use the calculated progress value here
               backgroundColor: Colors.grey[300],
               valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
             ),
           ),
         ),
-        actions: [
-          Icon(Icons.star, color: _questionsData[_currentQuestionIndex]['starsColor'], size: screenHeight * 0.04),
-          SizedBox(width: screenWidth * 0.01),
-          Icon(Icons.star, color: _questionsData[_currentQuestionIndex]['starsColor'], size: screenHeight * 0.04),
-          SizedBox(width: screenWidth * 0.01),
-          Icon(Icons.star, color: _questionsData[_currentQuestionIndex]['starsColor'], size: screenHeight * 0.04),
-          SizedBox(width: screenWidth * 0.01),
-        ],
+        actions: _buildStars(context),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -216,20 +249,46 @@ class _QuestionsState extends State<Questions> {
 
   void _checkAnswer() {
   bool isCorrect = _selectedChoice == _questionsData[_currentQuestionIndex]['correctChoice'];
+  if (isCorrect) {
+    _correctAnswersCount++;
+  }
+
+  void navigateToResult() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChallengeResult(
+          levelNumber:1,
+          numberOfStars: _correctAnswersCount,
+          onReplay: resetQuiz, 
+        ),
+      ),
+    );
+  }
+
+  void goToNextOrResult() {
+    if (_currentQuestionIndex == _questionsData.length - 1) {
+      // After the third question, show the ChallengeResult
+      navigateToResult();
+    } else {
+      // Move to the next question
+      setState(() {
+        _currentQuestionIndex++;
+        _hasMadeChoice = false;
+        _selectedChoice = null;
+        _videoController.dispose();
+        _initVideoPlayer();
+      });
+    }
+  }
+
+  // Navigate to the CorrectPage or WrongPage based on the current question's answer
   Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => isCorrect ? CorrectPage() : WrongPage()),
   ).then((_) {
-    // This callback is called after CorrectPage or WrongPage pops back
     if (mounted) {
-      setState(() {
-        _currentQuestionIndex = (_currentQuestionIndex + 1) % _questionsData.length;
-        _hasMadeChoice = false;
-        _selectedChoice = null;
-        _videoController.dispose(); // Dispose the current controller
-        // Initialize the video player for the next question
-        _initVideoPlayer();
-      });
+      goToNextOrResult();
     }
   });
 }

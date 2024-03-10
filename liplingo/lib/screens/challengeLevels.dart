@@ -1,91 +1,139 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../reusable_widget/reusable_widget.dart'; 
+import 'package:liplingo/screens/academy.dart';
+import 'package:liplingo/screens/level1.dart';
+import 'package:liplingo/screens/level2.dart';
 
-class challengeLevels extends StatefulWidget {
+class ChallengeLevels extends StatefulWidget {
   @override
-  _challengeLevelsState createState() => _challengeLevelsState();
+  _ChallengeLevelsState createState() => _ChallengeLevelsState();
 }
 
-class _challengeLevelsState extends State<challengeLevels> {
-  List<bool> levelLockStatus = List.generate(12, (index) => index != 0);
+class _ChallengeLevelsState extends State<ChallengeLevels> {
+  List<bool> levelLockStatus = List.filled(12, false);
+  List<int> levelStars = List.filled(12, 0);
 
-  void unlockNextLevel(int levelIndex) {
-    if (levelIndex < levelLockStatus.length - 1) {
-      setState(() {
-        levelLockStatus[levelIndex + 1] = false;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    _loadLevelStatus();
   }
+
+  Future<void> _loadLevelStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<bool> tempLockStatus = [true]; // First level unlocked by default
+    List<int> tempStars = [0]; // No stars by default
+    for (int i = 1; i < 12; i++) {
+      bool isUnlocked = prefs.getBool('level_${i + 1}_unlocked') ?? false;
+      int stars = prefs.getInt('level_${i + 1}_stars') ?? 0;
+      tempLockStatus.add(isUnlocked);
+      tempStars.add(stars);
+    }
+    setState(() {
+      levelLockStatus = tempLockStatus;
+      levelStars = tempStars;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: topBar(context, "Challenges"), // Custom topBar
-      body: GridView.builder(
-        padding: const EdgeInsets.all(16.0),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-        ),
-        itemCount: levelLockStatus.length,
-        itemBuilder: (context, index) {
-          return LevelItem(
-            index: index,
-            isLocked: levelLockStatus[index],
-            onTap: () {
-              if (!levelLockStatus[index]) {
-                unlockNextLevel(index);
-              }
-            },
-          );
-        },
+      appBar: topBar(context, "Challenges"),
+      body: Column(
+        children: [
+         SizedBox(height: 20),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, size: 45, color: Colors.blue), // Increased size and blue color
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => AcademyScreen()));
+              },
+            ),
+          ),
+          Expanded( // Use Expanded to fill the remaining space with GridView
+            child: GridView.builder(
+              // Adjust padding as needed for your design
+              padding: EdgeInsets.fromLTRB(16.0, MediaQuery.of(context).padding.top, 16.0, 16.0),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
+              ),
+              itemCount: 12,
+              itemBuilder: (context, index) {
+                return ChallengeCard(
+                  levelNumber: index + 1,
+                  isLocked: !levelLockStatus[index],
+                  stars: levelStars[index], 
+                );
+              },
+            ),
+          ),
+        ],
       ),
-      bottomNavigationBar: bottomBar(context, 1), // Custom bottomBar
+      bottomNavigationBar: bottomBar(context, 1),
     );
   }
 }
 
-class LevelItem extends StatelessWidget {
-  final int index;
+class ChallengeCard extends StatelessWidget {
+  final int levelNumber;
   final bool isLocked;
-  final VoidCallback onTap;
+  final int stars; // Initialize with the value loaded from SharedPreferences
 
-  const LevelItem({
+  const ChallengeCard({
     Key? key,
-    required this.index,
+    required this.levelNumber,
     required this.isLocked,
-    required this.onTap,
+    required this.stars, // Initialize with the value loaded from SharedPreferences
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: isLocked ? null : onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: isLocked ? Colors.grey[350] : Colors.lightBlue[100],
-          border: Border.all(color: Colors.black38),
-          borderRadius: BorderRadius.circular(8),
-        ),
+    // Use a ternary operator to determine the color based on isLocked
+    Color cardColor = isLocked ? Colors.grey : Colors.white;
+    return GestureDetector(
+      onTap: isLocked ? null : () {
+        navigateToLevel(context, levelNumber);
+      },
+          child: Card(
+        color: cardColor, // Apply the color to the Card widget
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              isLocked ? Icons.lock : Icons.lock_open,
-              color: isLocked ? Colors.grey : Colors.blue,
-              size: 24,
-            ),
-            Text(
-              'Level ${index + 1}',
-              style: TextStyle(
-                fontSize: 16,
-                color: isLocked ? Colors.black38 : Colors.black,
+            isLocked ? Icon(Icons.lock, color: Colors.black) : Text('$levelNumber', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20), ),
+            if (!isLocked) // Only show stars if the level is unlocked
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(3, (index) => Icon(
+                  index < stars ? Icons.star : Icons.star_border,
+                  color: index < stars ? Colors.yellow[600]! : Colors.grey,
+                )),
               ),
-            ),
           ],
         ),
       ),
     );
   }
+
+  void navigateToLevel(BuildContext context, int levelNumber) {
+    switch (levelNumber) {
+      case 1:
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Level1()));
+        break;
+
+       case 2: 
+       Navigator.push(context, MaterialPageRoute(builder: (context) => Level2()));
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Level $levelNumber is under construction')),
+        );
+        break;
+    }
+  }
 }
+
