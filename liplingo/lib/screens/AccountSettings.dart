@@ -215,16 +215,62 @@ class AccountSettingsScreen extends StatelessWidget {
   }
 
   void _onLogOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                SignInScreen()), // Navigate to your SignIn screen
-      );
-    } catch (e) {
-      print('Error logging out: $e');
+    // Show a custom-styled confirmation dialog
+    bool confirmLogout = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Logout'),
+          content: Container(
+            // Customized design for the dialog content
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.blue[200], // Adjust the background color
+            ),
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Are you sure you want to log out?',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'This action will sign you out of your account.',
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false), // No
+              child: Text('No'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true), // Yes
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the user confirms, log out
+    if (confirmLogout == true) {
+      try {
+        await FirebaseAuth.instance.signOut();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SignInScreen(),
+          ),
+        );
+      } catch (e) {
+        print('Error logging out: $e');
+      }
     }
   }
 
