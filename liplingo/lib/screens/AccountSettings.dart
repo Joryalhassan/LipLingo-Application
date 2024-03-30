@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liplingo/reusable_widget/reusable_widget.dart';
 import 'EditProfile.dart'; // Import your EditProfileScreen file
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,9 +12,16 @@ class AccountSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account Settings'),
-        centerTitle: true, // Center the title
-        backgroundColor: Colors.white, // Set background color for the app bar
+        elevation: 0.8,
+        toolbarHeight: 60,
+        leadingWidth: 75,
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.blue),
+        title: Text(
+          'Account Settings',
+          style: TextStyle(color: Colors.black),
+        ),
       ),
       body: Container(
         color: Colors.grey[200], // Set background color for the body
@@ -46,11 +54,11 @@ class AccountSettingsScreen extends StatelessWidget {
 
                 // Clickable Options - Log Out, Delete Account
                 _buildClickableOption(
-                    context, 'Log Out', Icons.logout, () => _onLogOut(context)),
+                    context, 'Log Out', Icons.logout, () => showLogoutConfirmation(context)),
 
                 SizedBox(height: 16), // Add space between options
                 _buildClickableOption(context, 'Delete Account', Icons.delete,
-                        () => _onDeleteAccount(context)),
+                        () => _showDeleteAccountDialog(context)),
               ],
             ),
           ),
@@ -69,7 +77,7 @@ class AccountSettingsScreen extends StatelessWidget {
           return Text('Error: ${snapshot.error}');
         } else {
           var userData = snapshot.data?.data();
-          String username = userData?['username'] ?? 'Username';
+          String username = userData?['first_name'] + " " + userData?['last_name'] ?? 'Full Name';
 
           return GestureDetector(
             onTap: () {
@@ -214,44 +222,98 @@ class AccountSettingsScreen extends StatelessWidget {
     );
   }
 
-  void _onLogOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                SignInScreen()), // Navigate to your SignIn screen
-      );
-    } catch (e) {
-      print('Error logging out: $e');
-    }
-  }
-
-  void _onDeleteAccount(BuildContext context) async {
-    // Show a confirmation dialog
-    bool confirmDelete = await showDialog(
+  void _showDeleteAccountDialog(BuildContext context) {
+    showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete your account?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false), // No
-              child: Text('No'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true), // Yes
-              child: Text('Yes'),
-            ),
-          ],
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0), // Adjust the value as needed
+          ),
+          child: Container(
+              padding: EdgeInsets.fromLTRB(40,35,40,30),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                        "Confirm Deletion?",
+                        style: TextStyle(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w700,
+
+                        )
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                        "Are you sure you would like to delete your account?",
+                        style: TextStyle(
+                          fontSize: 17,
+                        )
+                    ),
+                    const SizedBox(height: 25),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        OutlinedButton(
+                          child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                fontSize: 17,
+                              )
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 25.0,
+                              vertical: 10.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            side: BorderSide(
+                                width: 1,
+                                color: Colors.blue
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 27.0,
+                              vertical: 10.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            backgroundColor: Colors.red[700],
+                          ),
+                          child: Text(
+                              "Delete",
+                              style: TextStyle(
+                                fontSize: 17,
+                              )
+                          ),
+                          onPressed: () {
+                            _deleteAccount(context);
+                          },
+                        ),
+                      ],
+                    )
+
+                  ]
+              )
+          ),
         );
       },
     );
+  }
 
-    if (confirmDelete == true) {
-      try {
+  void _deleteAccount(BuildContext context) async {
+
+    try {
         User? user = FirebaseAuth.instance.currentUser;
 
         if (user != null) {
@@ -277,5 +339,6 @@ class AccountSettingsScreen extends StatelessWidget {
         print('Error deleting account: $e');
       }
     }
-  }
-}
+    }
+
+

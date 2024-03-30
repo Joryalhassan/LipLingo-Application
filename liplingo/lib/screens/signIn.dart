@@ -96,6 +96,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 25),
                 ),
               ),
+              const SizedBox(height: 7),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 35),
                 child: Text(
@@ -108,7 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
               Form(
                 key: _formKeySignIn,
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(45, 20, 45, 0),
+                  padding: EdgeInsets.fromLTRB(45, 15, 45, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

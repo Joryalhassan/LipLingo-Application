@@ -14,11 +14,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _fnameTextController = TextEditingController();
   final TextEditingController _lnameTextController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   String _userEmail = '';
   late String _originalFirstName;
   late String _originalLastName;
-  late String _originalUsername;
   Color _fieldBackgroundColor = Colors.white;
   bool _changesMade = false;
 
@@ -44,11 +42,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         _fnameTextController.text = userData['first_name'] ?? '';
         _lnameTextController.text = userData['last_name'] ?? '';
-        _usernameController.text = userData['username'] ?? '';
 
         _originalFirstName = _fnameTextController.text;
         _originalLastName = _lnameTextController.text;
-        _originalUsername = _usernameController.text;
       });
     }
   }
@@ -58,13 +54,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     mediaSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.8,
+        toolbarHeight: 60,
+        leadingWidth: 75,
         backgroundColor: Colors.white,
+        centerTitle: true,
         iconTheme: IconThemeData(color: Colors.blue),
         title: Text(
           'Edit Profile',
           style: TextStyle(color: Colors.black),
         ),
-        centerTitle: true,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -92,7 +91,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 _buildEditableField('First Name', _fnameTextController),
                 _buildEditableField('Last Name', _lnameTextController),
                 _buildNonEditableField('Email', _userEmail),
-                _buildEditableField('Username', _usernameController),
                 SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -114,7 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
+                        backgroundColor: Colors.blue,
                         minimumSize: Size(150, 50),
                       ),
                     ),
@@ -130,7 +128,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
+                        backgroundColor: Colors.blue,
                         minimumSize: Size(150, 50),
                       ),
                     ),
@@ -148,7 +146,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       _fnameTextController.text = _originalFirstName;
       _lnameTextController.text = _originalLastName;
-      _usernameController.text = _originalUsername;
       _fieldBackgroundColor = Colors.white;
       _changesMade = false;
     });
@@ -243,7 +240,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         FirebaseFirestore.instance.collection('Users').doc(user.uid).update({
           'first_name': _fnameTextController.text.trim(),
           'last_name': _lnameTextController.text.trim(),
-          'username': _usernameController.text.trim(),
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -256,7 +252,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         setState(() {
           _originalFirstName = _fnameTextController.text;
           _originalLastName = _lnameTextController.text;
-          _originalUsername = _usernameController.text;
           _changesMade = false;
         });
       }

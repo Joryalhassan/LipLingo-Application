@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../reusable_widget/reusable_widget.dart';
 import 'package:liplingo/screens/challengeLevels.dart';
-//import 'package:liplingo/screens/lessonScreen.dart';
+import 'lesson.dart';
 
 class AcademyScreen extends StatelessWidget {
   const AcademyScreen({super.key});
@@ -34,10 +34,13 @@ class AcademyScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => LessonScreen()));
+                },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
-                  onPrimary: Colors.white,
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 20),
                   // Adjust padding to match design
                   elevation: 4,
@@ -76,8 +79,8 @@ class AcademyScreen extends StatelessWidget {
                       builder: (context) => ChallengeLevels()));
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
-                  onPrimary: Colors.white,
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 20),
                   // Adjust padding to match design
                   elevation: 4,

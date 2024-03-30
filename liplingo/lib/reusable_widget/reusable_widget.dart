@@ -106,13 +106,103 @@ AppBar topBar(BuildContext context, String screenName) {
             size: 30,
           ),
           onPressed: () {
-            _signOut(context);
+            showLogoutConfirmation(context);
           },
         ),
       )
     ],
   );
 }
+
+void showLogoutConfirmation(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0), // Adjust the value as needed
+        ),
+        child: Container(
+          padding: EdgeInsets.fromLTRB(40,35,40,30),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                  "Logout?",
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w700,
+
+                  )
+              ),
+              const SizedBox(height: 10),
+              Text(
+                  "Are you sure you would like to logout?",
+                  style: TextStyle(
+                    fontSize: 17,
+                  )
+              ),
+              const SizedBox(height: 25),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  OutlinedButton(
+                    child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: 17,
+                        )
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 25.0,
+                        vertical: 10.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      side: BorderSide(
+                          width: 1,
+                          color: Colors.blue
+                      ),
+                    ),
+                    onPressed: () {
+                        Navigator.of(context).pop();
+                        },
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 25.0,
+                        vertical: 10.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      backgroundColor: Colors.red[700],
+                    ),
+                      child: Text(
+                          "Logout",
+                          style: TextStyle(
+                            fontSize: 17,
+                          )
+                      ),
+                    onPressed: () {
+                        _signOut(context);
+                        },
+                  ),
+                ],
+              )
+
+            ]
+          )
+        ),
+      );
+    },
+  );
+}
+
 
 //Signout Function
 Future<void> _signOut(context) async {
@@ -156,6 +246,29 @@ BottomNavigationBar bottomBar(BuildContext context, int index) {
           MaterialPageRoute(builder: (context) => AcademyScreen()),
         );
       }
+    },
+  );
+}
+
+IconButton backButton(BuildContext context) {
+  return IconButton(
+    icon: Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.arrow_back,
+          color: Colors.white,
+        ),
+      ),
+    ),
+    onPressed: () {
+      // Navigate back when the button is pressed
+      Navigator.pop(context);
     },
   );
 }

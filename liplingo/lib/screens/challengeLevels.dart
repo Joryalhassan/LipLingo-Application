@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../reusable_widget/reusable_widget.dart';
-import 'package:liplingo/screens/academy.dart';
 import 'package:liplingo/screens/level1.dart';
 import 'package:liplingo/screens/level2.dart';
 
@@ -46,12 +45,7 @@ class _ChallengeLevelsState extends State<ChallengeLevels> {
           SizedBox(height: 20),
           Align(
             alignment: Alignment.centerLeft,
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, size: 45, color: Colors.blue), // Increased size and blue color
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => AcademyScreen()));
-              },
-            ),
+            child: backButton(context),
           ),
           Expanded( // Use Expanded to fill the remaining space with GridView
             child: GridView.builder(

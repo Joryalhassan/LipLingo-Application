@@ -46,42 +46,50 @@ class _resetPasswordState extends State<resetPassword> {
     });
 
     try {
-      // Log user in through firebase auth function.
-      await _auth.sendPasswordResetEmail(
-        email: _resetPasswordEmailController.text.trim(),
-      );
+      // Check if the email exists
+      final List<String> signInMethods = await FirebaseAuth.instance
+          .fetchSignInMethodsForEmail(_resetPasswordEmailController.text.trim());
 
-      // Close bottom drawer if no error encountered
-      Navigator.pop(context);
+      if (signInMethods.isNotEmpty) {
+        // If the email exists, proceed to send the reset password email
+        await _auth.sendPasswordResetEmail(
+          email: _resetPasswordEmailController.text.trim(),
+        );
 
-      // Show Success Message Snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.green,
-          content: Text('Password reset email sent successfully!'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+        // Close bottom drawer if no error encountered
+        Navigator.pop(context);
+
+        // Show Success Message Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Password reset email sent successfully!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else {
+        // If the email does not exist, display an error message
+        setState(() {
+          _errorMessage = 'Email not found. Please enter a valid email.';
+          _isSendingEmail = false;
+        });
+      }
     } on FirebaseAuthException catch (e) {
-      // Handle errors
+      // Handle other Firebase Auth exceptions
       setState(() {
         // Handle different types of FirebaseAuth errors
-        if (e.code == 'user-not-found' || e.code == 'invalid-email') {
-          _errorMessage = "Invalid email address.";
+        if (e.code == 'invalid-email') {
+          _errorMessage = 'Invalid email address.';
         } else if (e.code == 'requires-recent-login') {
           _errorMessage =
-          "You must have logged in recently to reset your password. Log in and try again";
+          'You must have logged in recently to reset your password. Log in and try again';
         } else if (e.code == 'network-request-failed') {
-          _errorMessage = "No internet connection";
+          _errorMessage = 'No internet connection';
         } else {
           // Handle other types of FirebaseAuthException errors
-          _errorMessage = "There's been an error. Try again later";
+          _errorMessage = 'There\'s been an error. Try again later';
         }
-      });
-    } finally {
-      // Set _isSendingEmail to false after the function finishes running
-      setState(() {
-        _isSendingEmail = false;
+        _isSendingEmail = false; // Set _isSendingEmail to false
       });
     }
   }
