@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/reusable_widget/reusable_widget.dart';
-import 'EditProfile.dart'; // Import your EditProfileScreen file
+import 'package:liplingo/reusable_widget/reusableWidgets.dart';
+import 'editProfile.dart'; // Import your EditProfileScreen file
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:liplingo/screens/SignIn.dart';
-import 'package:liplingo/screens/Help.dart';
+import 'package:liplingo/screens/help.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AccountSettingsScreen extends StatelessWidget {

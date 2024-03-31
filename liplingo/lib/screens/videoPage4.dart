@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../reusable_widget/reusable_widget.dart';
+import '../reusable_widget/reusableWidgets.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPage4 extends StatefulWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../reusable_widget/reusable_widget.dart'; // Assuming path to your reusables
-import 'package:liplingo/screens/VideoPage.dart';
-import 'package:liplingo/screens/VideoPage2.dart';
-import 'package:liplingo/screens/VideoPage3.dart';
-import 'package:liplingo/screens/VideoPage4.dart';
-import 'package:liplingo/screens/VideoPage5.dart';
+import '../reusable_widget/reusableWidgets.dart'; // Assuming path to your reusables
+import 'package:liplingo/screens/videoPage.dart';
+import 'package:liplingo/screens/videoPage2.dart';
+import 'package:liplingo/screens/videoPage3.dart';
+import 'package:liplingo/screens/videoPage4.dart';
+import 'package:liplingo/screens/videoPage5.dart';
 
 class LessonScreen extends StatelessWidget {
   const LessonScreen({Key? key});

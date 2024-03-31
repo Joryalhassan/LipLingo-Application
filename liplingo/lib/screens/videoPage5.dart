@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import '../reusable_widget/reusable_widget.dart';
+import '../reusable_widget/reusableWidgets.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPage extends StatefulWidget {
-  const VideoPage({Key? key}) : super(key: key);
+class VideoPage5 extends StatefulWidget {
+  const VideoPage5({Key? key}) : super(key: key);
 
   @override
-  _VideoPageState createState() => _VideoPageState();
+  _VideoPage5State createState() => _VideoPage5State();
 }
 
-class _VideoPageState extends State<VideoPage> {
+class _VideoPage5State extends State<VideoPage5> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isPlaying = false;

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:liplingo/screens/academy.dart';
 import 'package:liplingo/screens/lipReading.dart';
 import 'package:liplingo/screens/signIn.dart';
-import 'package:liplingo/screens/AccountSettings.dart';
+import 'package:liplingo/screens/accountSettings.dart';
 
 // Text field
 TextField reusableTextField(String text, IconData icon, bool isPasswordType,
