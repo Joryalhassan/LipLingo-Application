@@ -40,9 +40,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
     mediaSize= MediaQuery.of(context).size;

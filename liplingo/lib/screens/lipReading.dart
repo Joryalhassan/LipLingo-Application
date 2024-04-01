@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:liplingo/screens/savedTextList.dart';
 import 'package:liplingo/screens/videoPreview.dart';
 import 'package:liplingo/screens/viewText.dart';
 import '../reusable_widget/reusableWidgets.dart';
@@ -56,7 +57,7 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
     if (_isLoading) {
       return Scaffold(
         // Top App Bar
-        appBar: topBar(context, "Academy"),
+        appBar: topBar(context, "Lip Reading"),
         body: Container(
           color: Colors.white,
           child: const Center(
@@ -68,34 +69,93 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
     } else {
       return Scaffold(
         // Top App Bar
-        appBar: topBar(context, "Academy"),
+        appBar: topBar(context, "Lip Reading"),
+        extendBodyBehindAppBar: true,
         body: Center(
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
               CameraPreview(_cameraController),
-              Padding(
-                padding: const EdgeInsets.all(25),
-                child: FloatingActionButton(
-                  backgroundColor: Colors.red,
-                  child: Icon(_isRecording ? Icons.stop : Icons.circle),
-                  onPressed: () => _recordVideo(),
-                ),
-              ),
-              ElevatedButton(
-                child: Text(
-                    "ViewTextPage",
-                    style: TextStyle(
-                      fontSize: 17,
+              _isRecording
+                  ? Padding(
+                      padding: const EdgeInsets.all(25),
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.red,
+                        child: Icon(
+                          Icons.stop,
+                          size: 30,
+                        ),
+                        onPressed: () => _recordVideo(),
+                      ),
                     )
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => ViewTextScreen()),
-                  );
-                },
-              ),
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 15,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.camera_alt,
+                              size: 40,
+                            ),
+                            onPressed: () => _recordVideo(),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                  vertical: 13.0,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                backgroundColor: Colors.blue,
+                              ),
+                              child: Text("Upload Video",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  )),
+                              onPressed: () {},
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 20.0,
+                                  vertical: 13.0,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                backgroundColor: Colors.blue,
+                              ),
+                              child: Text("Saved Text List",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  )),
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        SavedTextListScreen()));
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 35),
+                      ],
+                    ),
             ],
           ),
         ),

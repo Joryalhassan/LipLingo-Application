@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:liplingo/screens/lipReading.dart';
-
+import 'package:liplingo/screens/savedTextList.dart';
 import '../reusable_widget/reusableWidgets.dart';
 import 'editText.dart';
 
@@ -13,7 +13,7 @@ class ViewTextScreen extends StatefulWidget {
 }
 
 class _ViewTextScreenState extends State<ViewTextScreen> {
-  //Logged In user's infromation
+  //Logged In user's information
   final user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
@@ -26,6 +26,10 @@ class _ViewTextScreenState extends State<ViewTextScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Align(
+              alignment: Alignment.topLeft,
+              child: backButton(context),
+            ),
             Column(
               children: [
                 Align(
@@ -100,7 +104,9 @@ class _ViewTextScreenState extends State<ViewTextScreen> {
                             fontSize: 17,
                           )),
                       onPressed: () {
-                        ;
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SavedTextListScreen()));
+
                       },
                     ),
                   ],

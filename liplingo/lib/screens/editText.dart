@@ -27,6 +27,10 @@ class _EditTextScreenState extends State<EditTextScreen> {
               children: [
                 Align(
                   alignment: Alignment.topLeft,
+                  child: backButton(context),
+                ),
+                Align(
+                  alignment: Alignment.topLeft,
                   child: Text(
                     "Interpreted To Text: ",
                     style: TextStyle(

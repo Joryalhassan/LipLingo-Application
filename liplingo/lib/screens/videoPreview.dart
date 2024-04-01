@@ -5,7 +5,8 @@ import 'package:video_player/video_player.dart';
 class VideoPreviewScreen extends StatefulWidget {
   final String filePath;
 
-  const VideoPreviewScreen({Key? key, required this.filePath}) : super(key: key);
+  const VideoPreviewScreen({Key? key, required this.filePath})
+      : super(key: key);
 
   @override
   State<VideoPreviewScreen> createState() => _VideoPreviewPageState();
@@ -32,8 +33,8 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.8,
-        toolbarHeight: 60,
-        leadingWidth: 75,
+        toolbarHeight: 70,
+        leadingWidth: 15,
         backgroundColor: Colors.white,
         title: Text("Confirm Video?",
             style: TextStyle(
@@ -42,7 +43,21 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
             )),
         actions: [
           IconButton(
-            icon: const Icon(Icons.check),
+            icon: const Icon(
+              Icons.check,
+              color: Colors.lightGreenAccent,
+              size: 35,
+            ),
+            onPressed: () {
+              ;
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.cancel,
+              color: Colors.red,
+              size: 35,
+            ),
             onPressed: () {
               ;
             },
