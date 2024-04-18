@@ -272,3 +272,48 @@ IconButton backButton(BuildContext context) {
     },
   );
 }
+
+//Empty Text List Widget - Saved Text List Page
+Container emptySavedTextList() {
+  return Container(
+    width: 200,
+    height: 150,
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Padding(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.list,
+            color: Colors.blue,
+            size: 35,
+          ),
+          const SizedBox(height: 5),
+          Text(
+            'Empty List',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18.0,
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            'No saved texts found',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.grey[700],
+              fontSize: 15,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

@@ -1,15 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../reusable_widget/reusableWidgets.dart';
 import 'package:video_player/video_player.dart';
+import '../utils/reusableWidgets.dart';
 
-class VideoPage5 extends StatefulWidget {
-  const VideoPage5({Key? key}) : super(key: key);
+class LessonVideoScrenn extends StatefulWidget {
+  final DocumentReference lessonDocRef;
+
+  const LessonVideoScrenn({Key? key, required this.lessonDocRef}) : super(key: key);
 
   @override
-  _VideoPage5State createState() => _VideoPage5State();
+  _VideoPageState createState() => _VideoPageState();
 }
 
-class _VideoPage5State extends State<VideoPage5> {
+class _VideoPageState extends State<LessonVideoScrenn> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   bool _isPlaying = false;
@@ -18,7 +21,7 @@ class _VideoPage5State extends State<VideoPage5> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset("assets/try.mp4");
+    //_controller = VideoPlayerController.asset(widget.lessonDocRef.get('videoPath' as GetOptions?));
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
     _controller.setVolume(1.0);
@@ -66,7 +69,7 @@ class _VideoPage5State extends State<VideoPage5> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "Lesson 1: Title of First Lesson",
+                  "test",//"Lesson 1: ${widget.lessonDocRef.get('videoTitle')}",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../reusable_widget/reusableWidgets.dart';
+import '../utils/reusableWidgets.dart';
 import 'package:liplingo/screens/challengeLevels.dart';
-import 'lesson.dart';
+import 'lessonList.dart';
 
 class AcademyScreen extends StatelessWidget {
   const AcademyScreen({super.key});
@@ -36,7 +36,7 @@ class AcademyScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => LessonScreen()));
+                      builder: (context) => LessonListScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,

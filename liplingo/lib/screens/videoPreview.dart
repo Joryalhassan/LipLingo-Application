@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:liplingo/screens/viewText.dart';
 import 'package:video_player/video_player.dart';
+import 'package:http/http.dart' as http;
 
 class VideoPreviewScreen extends StatefulWidget {
   final String filePath;
@@ -32,7 +33,6 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0.8,
         toolbarHeight: 70,
@@ -52,14 +52,14 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
               color: Colors.lightGreenAccent,
               size: 35,
             ),
-            onPressed: () {
+            onPressed: () async {
 
-              //---------------------------------------------
-              //Add Integration with AI model class here
-              //---------------------------------------------
+              //Send Video to server
+              //_sendVideoToServer(File(widget.filePath));
 
               _videoPlayerController.pause();
-              String translatedText = "This is a translated text.";
+              String translatedText = await _sendVideoToServer(File(widget.filePath));
+              //String translatedText = "Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. Test Text. ";
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => ViewTextScreen(translatedText: translatedText)));
             },
@@ -83,10 +83,35 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
           if (state.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            return VideoPlayer(_videoPlayerController);
+            return AspectRatio(
+              aspectRatio: _videoPlayerController.value.aspectRatio,
+              child: VideoPlayer(_videoPlayerController),
+            );
           }
         },
       ),
     );
+  }
+}
+
+Future<String> _sendVideoToServer(File videoFile) async {
+  try {
+    var uri = Uri.parse('http://your-api-url.com/predict'); // Replace with your API URL
+    var request = http.MultipartRequest('POST', uri);
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      // Video successfully uploaded to the server
+      final respStr = await response.stream.bytesToString();
+      print('Video uploaded successfully');
+      return respStr;
+    } else {
+      // Error uploading the video
+      print('Error uploading video: ${response.reasonPhrase}');
+      throw Exception('Error uploading video: ${response.reasonPhrase}');
+    }
+  } catch (e) {
+    print('Error sending request: $e');
+    throw Exception('Error sending request: $e');
   }
 }

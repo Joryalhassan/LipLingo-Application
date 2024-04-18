@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:liplingo/screens/savedTextList.dart';
 import 'package:liplingo/screens/videoPreview.dart';
 import 'package:video_player/video_player.dart';
-import '../reusable_widget/reusableWidgets.dart';
+import '../utils/reusableWidgets.dart';
 import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +15,6 @@ class LipReadingScreen extends StatefulWidget {
 }
 
 class _LipReadingScreenState extends State<LipReadingScreen> {
-
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = true;
   bool _isRecording = false;
@@ -116,7 +115,8 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
             builder: (BuildContext context) {
               return Dialog(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0), // Adjust the value as needed
+                  borderRadius:
+                      BorderRadius.circular(20.0), // Adjust the value as needed
                 ),
                 child: Container(
                   padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
@@ -142,27 +142,26 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
                       Align(
                         alignment: Alignment.bottomRight,
                         child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 27.0,
-                            vertical: 10.0,
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 27.0,
+                              vertical: 10.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            backgroundColor: Colors.blue,
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                          child: Text(
+                            "Ok",
+                            style: TextStyle(
+                              fontSize: 17,
+                            ),
                           ),
-                          backgroundColor: Colors.blue,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                         ),
-                        child:
-                          Text(
-                          "Ok",
-                          style: TextStyle(
-                            fontSize: 17,
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
                       ),
                     ],
                   ),
@@ -178,13 +177,14 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
           Navigator.push(context, route);
         }
       }
-    } on PlatformException catch (error) {
+    } on PlatformException catch (e) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0), // Adjust the value as needed
+              borderRadius:
+                  BorderRadius.circular(20.0), // Adjust the value as needed
             ),
             child: Container(
               padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
@@ -210,26 +210,26 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
                   Align(
                     alignment: Alignment.bottomRight,
                     child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 27.0,
-                        vertical: 10.0,
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 27.0,
+                          vertical: 10.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        backgroundColor: Colors.blue,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+                      child: Text(
+                        "Ok",
+                        style: TextStyle(
+                          fontSize: 17,
+                        ),
                       ),
-                      backgroundColor: Colors.blue,
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
-                    child: Text(
-                      "Ok",
-                      style: TextStyle(
-                        fontSize: 17,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
                   ),
                 ],
               ),
@@ -256,10 +256,44 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
       );
     } else if (_isRecording) {
       return Scaffold(
+        appBar: AppBar(
+          leading: null,
+          backgroundColor: Colors.white,
+        ),
+        extendBodyBehindAppBar: true,
         body: Stack(
-          fit: StackFit.expand,
+          alignment: Alignment.center,
           children: [
             CameraPreview(_cameraController),
+            // Oval-shaped face fitting widget
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                  Colors.grey.withOpacity(0.2), BlendMode.srcOut),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.grey,
+                        backgroundBlendMode: BlendMode.dstOut),
+                  ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 80),
+                      height: 350,
+                      width: 275,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.all(
+                          Radius.elliptical(300, 400),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(25),
               child: Column(
@@ -273,6 +307,7 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
                       fontSize: 25,
                     ),
                   ),
+                  const SizedBox(height: 10),
                   SizedBox(
                     height: 75,
                     width: 75,
@@ -292,10 +327,14 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 70),
                 ],
               ),
             ),
           ],
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.white,
         ),
       );
     } else {
@@ -306,10 +345,37 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
         extendBody: true,
         body: Center(
           child: Stack(
-            fit: StackFit.expand,
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment.center,
             children: [
               CameraPreview(_cameraController),
+              ColorFiltered(
+                colorFilter: ColorFilter.mode(
+                    Colors.grey.withOpacity(0.2), BlendMode.srcOut), // This one will create the magic
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.grey,
+                          backgroundBlendMode: BlendMode.dstOut), // This one will handle background + difference out
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 80),
+                        height: 350,
+                        width: 275,
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.all(
+                              Radius.elliptical(300, 400),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Padding(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).padding.bottom + 50),

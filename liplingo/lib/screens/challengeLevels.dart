@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../reusable_widget/reusableWidgets.dart';
+import '../utils/reusableWidgets.dart';
 import 'package:liplingo/screens/level1.dart';
 import 'package:liplingo/screens/level2.dart';
 

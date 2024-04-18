@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/reusable_widget/reusableWidgets.dart';
+import 'package:liplingo/utils/reusableWidgets.dart';
 import 'editProfile.dart'; // Import your EditProfileScreen file
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,7 +30,7 @@ class AccountSettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment:
-              MainAxisAlignment.center, // Center content vertically
+                  MainAxisAlignment.center, // Center content vertically
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // User Photo, Username, and Edit Profile Button
@@ -41,7 +41,7 @@ class AccountSettingsScreen extends StatelessWidget {
 
                 // Clickable Options - Clear Text Data, Contact Us, Help
                 _buildClickableOption(
-                    context, 'Clear Text Data', Icons.clear, _onClearTextData),
+                    context, 'Clear Text Data', Icons.clear, () => _showDeleteSavedTextDialog(context)),
                 SizedBox(height: 16), // Add space between options
                 _buildClickableOption(
                     context, 'Contact Us', Icons.mail, _onContactUs),
@@ -53,12 +53,12 @@ class AccountSettingsScreen extends StatelessWidget {
                 SizedBox(height: 60),
 
                 // Clickable Options - Log Out, Delete Account
-                _buildClickableOption(
-                    context, 'Log Out', Icons.logout, () => showLogoutConfirmation(context)),
+                _buildClickableOption(context, 'Log Out', Icons.logout,
+                    () => showLogoutConfirmation(context)),
 
                 SizedBox(height: 16), // Add space between options
                 _buildClickableOption(context, 'Delete Account', Icons.delete,
-                        () => _showDeleteAccountDialog(context)),
+                    () => _showDeleteAccountDialog(context)),
               ],
             ),
           ),
@@ -77,7 +77,9 @@ class AccountSettingsScreen extends StatelessWidget {
           return Text('Error: ${snapshot.error}');
         } else {
           var userData = snapshot.data?.data();
-          String username = userData?['first_name'] + " " + userData?['last_name'] ?? 'Full Name';
+          String username =
+              userData?['first_name'] + " " + userData?['last_name'] ??
+                  'Full Name';
 
           return GestureDetector(
             onTap: () {
@@ -194,9 +196,8 @@ class AccountSettingsScreen extends StatelessWidget {
 
   // Placeholder functions for option callbacks
 
-  void _onClearTextData() {
-    // Replace with the logic to clear text data
-    print('Clear Text Data');
+  void _onClearTextData(BuildContext context) {
+    _showDeleteSavedTextDialog(context);
   }
 
   void _onContactUs() async {
@@ -228,40 +229,34 @@ class AccountSettingsScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0), // Adjust the value as needed
+            borderRadius:
+                BorderRadius.circular(20.0), // Adjust the value as needed
           ),
           child: Container(
-              padding: EdgeInsets.fromLTRB(40,35,40,30),
+              padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                        "Confirm Deletion?",
+                    Text("Confirm Deletion?",
                         style: TextStyle(
                           fontSize: 23,
                           fontWeight: FontWeight.w700,
-
-                        )
-                    ),
+                        )),
                     const SizedBox(height: 10),
-                    Text(
-                        "Are you sure you would like to delete your account?",
+                    Text("Are you sure you would like to delete your account?",
                         style: TextStyle(
                           fontSize: 17,
-                        )
-                    ),
+                        )),
                     const SizedBox(height: 25),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         OutlinedButton(
-                          child: Text(
-                              "Cancel",
+                          child: Text("Cancel",
                               style: TextStyle(
                                 fontSize: 17,
-                              )
-                          ),
+                              )),
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(
                               horizontal: 25.0,
@@ -270,10 +265,7 @@ class AccountSettingsScreen extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
-                            side: BorderSide(
-                                width: 1,
-                                color: Colors.blue
-                            ),
+                            side: BorderSide(width: 1, color: Colors.blue),
                           ),
                           onPressed: () {
                             Navigator.of(context).pop();
@@ -290,55 +282,146 @@ class AccountSettingsScreen extends StatelessWidget {
                             ),
                             backgroundColor: Colors.red[700],
                           ),
-                          child: Text(
-                              "Delete",
+                          child: Text("Delete",
                               style: TextStyle(
                                 fontSize: 17,
-                              )
-                          ),
+                              )),
                           onPressed: () {
                             _deleteAccount(context);
                           },
                         ),
                       ],
                     )
-
-                  ]
-              )
-          ),
+                  ])),
         );
       },
     );
   }
 
   void _deleteAccount(BuildContext context) async {
-
     try {
-        User? user = FirebaseAuth.instance.currentUser;
+      User? user = FirebaseAuth.instance.currentUser;
 
-        if (user != null) {
-          // Delete user data from Firestore
-          await FirebaseFirestore.instance
-              .collection('Users')
-              .doc(user.uid)
-              .delete();
+      if (user != null) {
+        // Delete user data from Firestore
+        await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user.uid)
+            .delete();
 
-          // Delete the user account
-          await user.delete();
+        // Delete the user account
+        await user.delete();
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    SignInScreen()), // Navigate to your SignIn screen
-          );
-        } else {
-          print('User not found');
-        }
-      } catch (e) {
-        print('Error deleting account: $e');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  SignInScreen()), // Navigate to your SignIn screen
+        );
+      } else {
+        print('User not found');
       }
+    } catch (e) {
+      print('Error deleting account: $e');
     }
+  }
+}
+
+void _showDeleteSavedTextDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.circular(20.0), // Adjust the value as needed
+        ),
+        child: Container(
+            padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Confirm Deletion?",
+                      style: TextStyle(
+                        fontSize: 23,
+                        fontWeight: FontWeight.w700,
+                      )),
+                  const SizedBox(height: 10),
+                  Text("Are you sure you would like to delete all your saved texts?",
+                      style: TextStyle(
+                        fontSize: 17,
+                      )),
+                  const SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OutlinedButton(
+                        child: Text("Cancel",
+                            style: TextStyle(
+                              fontSize: 17,
+                            )),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25.0,
+                            vertical: 10.0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          side: BorderSide(width: 1, color: Colors.blue),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 27.0,
+                            vertical: 10.0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          backgroundColor: Colors.red[700],
+                        ),
+                        child: Text("Delete",
+                            style: TextStyle(
+                              fontSize: 17,
+                            )),
+                        onPressed: () {
+                          _deleteSavedTextList(context);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  )
+                ])),
+      );
+    },
+  );
+}
+
+void _deleteSavedTextList(BuildContext context) async {
+  User? user = FirebaseAuth.instance.currentUser;
+  FirebaseFirestore firestoreDB = FirebaseFirestore.instance;
+
+  await firestoreDB
+      .collection("Users")
+      .doc(user?.uid)
+      .collection('savedText')
+      .get()
+      .then((snapshot) {
+    for (DocumentSnapshot ds in snapshot.docs) {
+      ds.reference.delete();
     }
-
-
+  }).catchError((error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Failed to delete saved text list"),
+        backgroundColor: Colors.red,
+      ),
+    );
+  });
+}
