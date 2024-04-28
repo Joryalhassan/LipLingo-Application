@@ -201,6 +201,10 @@ Widget _buildLabeledInputField({
 
 
 Widget _buildRegisterButton() {
+  // Get the current screen width
+  double screenWidth = MediaQuery.of(context).size.width;
+  // Determine the horizontal padding based on screen width
+  double horizontalPadding = screenWidth * 0.2; 
   return Center(
     child: ElevatedButton(
       onPressed: () async {
@@ -273,7 +277,7 @@ Widget _buildRegisterButton() {
       ),
       style: ElevatedButton.styleFrom(
         primary: Colors.blue,
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 90),
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: horizontalPadding),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),

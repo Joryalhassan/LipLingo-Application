@@ -60,17 +60,27 @@ class _Level2State extends State<Level2> {
       });
     }
   }
-
-  void resetQuiz() {
-  setState(() {
-    _currentQuestionIndex = 0;
-    _correctAnswersCount = 0;
-    _hasMadeChoice = false;
-    _selectedChoice = null;
-    _videoController.dispose();
-    _initVideoPlayer();
-  });
+void replayLevel() {
+ if (mounted) {
+    Navigator.pop(context); // Ensure context is still available when popping
+    resetQuiz(); // Reset the quiz
+  }
 }
+  void resetQuiz() {
+  if (mounted) {
+    setState(() {
+      _currentQuestionIndex = 0;
+      _correctAnswersCount = 0;
+      _hasMadeChoice = false;
+      _selectedChoice = null;
+      _videoController.dispose();
+      _initVideoPlayer();
+    });
+  }
+}
+
+
+
 
   @override
   void dispose() {
@@ -260,7 +270,7 @@ class _Level2State extends State<Level2> {
         builder: (context) => ChallengeResult(
           levelNumber:2,
           numberOfStars: _correctAnswersCount,
-          onReplay: resetQuiz, 
+        
         ),
       ),
     );

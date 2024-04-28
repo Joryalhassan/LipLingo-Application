@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:liplingo/screens/checkpage.dart'; 
 import 'package:liplingo/screens/challengResult.dart';
+import 'package:liplingo/screens/FirestoreService.dart';
+
 class Level1 extends StatefulWidget {
   @override
   _Level1State createState() => _Level1State();
@@ -61,16 +63,23 @@ class _Level1State extends State<Level1> {
     }
   }
 
-  void resetQuiz() {
-  setState(() {
-    _currentQuestionIndex = 0;
-    _correctAnswersCount = 0;
-    _hasMadeChoice = false;
-    _selectedChoice = null;
-    _videoController.dispose();
-    _initVideoPlayer();
-  });
-}
+  void navigateToResult() async {
+    // Call the update progress method before navigating to the result screen
+    await FirestoreService.updateLevelProgress(1, _correctAnswersCount);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChallengeResult(
+          levelNumber: 1,
+          numberOfStars: _correctAnswersCount,
+         
+        ),
+      ),
+    );
+  }
+
+
 
   @override
   void dispose() {
@@ -260,7 +269,7 @@ class _Level1State extends State<Level1> {
         builder: (context) => ChallengeResult(
           levelNumber:1,
           numberOfStars: _correctAnswersCount,
-          onReplay: resetQuiz, 
+         
         ),
       ),
     );
