@@ -19,20 +19,20 @@ class _Level12State extends State<Level12> {
     {
       'videoAsset': 'assets/Q34-whatweekend.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['What will you \n do at the weekend', 'when is the \n weekend', 'where to go at\n the weekend'],
-      'correctChoice': 'What will you \n do at the weekend',
+      'choices': ['What will\nyou do at\nthe weekend', 'when is the weekend', 'where to\ngo at the\nweekend'],
+      'correctChoice': 'What will\nyou do at\nthe weekend',
     },
     {
       'videoAsset': 'assets/Q35-whatholiday.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['Where is \n your holiday', 'What will you \n do on holiday', 'When is your \n holiday'],
+      'choices': ['Where is \n your holiday', 'What will you \n do on holiday', 'When is\nyour\nholiday'],
       'correctChoice': 'What will you \n do on holiday',
     },
     {
       'videoAsset': 'assets/Q36-where.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['To where \n are you travelling', 'When are \n you travelling', 'Where are \n you travelling'],
-      'correctChoice': 'Where are \n you travelling',
+      'choices': ['To where\nare you\ntravelling', 'When are you travelling', 'Where are\nyou\ntravelling'],
+      'correctChoice': 'Where are\nyou\ntravelling',
     },
   ];
 
@@ -203,6 +203,7 @@ void replayLevel() {
                       _choiceButton(_questionsData[_currentQuestionIndex]['choices'][2], screenWidth),
                     ],
                   ),
+                   SizedBox(height: 10),
                   _choiceButton(_questionsData[_currentQuestionIndex]['choices'][1], screenWidth),
                 ],
               ),

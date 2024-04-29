@@ -114,6 +114,9 @@ Widget build(BuildContext context) {
     case 12:
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Level12()));
       break;
+    case 13:
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChallengeLevels()));
+      break;
     default:
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Level $nextLevel is under construction')),
@@ -131,7 +134,7 @@ Widget build(BuildContext context) {
                 icon: Icon(Icons.menu),
                 onPressed: () {
                  saveResultAndUnlockNextLevel(context);
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ChallengeLevels()));
+                  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => ChallengeLevels()));
                 },
                 style: buttonStyle,
               ),

@@ -19,8 +19,8 @@ class _Level11State extends State<Level11> {
     {
       'videoAsset': 'assets/Q31-Igotvegetables.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['I got vegetables', 'I have vertebrae', 'I grab vegetables'],
-      'correctChoice': 'I got vegetables',
+      'choices': ['I got\nvegetables', 'I have vertebrae', 'I grab\nvegetables'],
+      'correctChoice': 'I got\nvegetables',
     },
     {
       'videoAsset': 'assets/Q32-Igotfruit.mp4',
@@ -31,8 +31,8 @@ class _Level11State extends State<Level11> {
     {
       'videoAsset': 'assets/Q33-himynameisjessica.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['My mom is Jessy', 'Hi Jessy', 'Hi my name is jessica'],
-      'correctChoice': 'Hi my name is jessica',
+      'choices': ['My mom\nis Jessy', 'Hi Jessy', 'Hi my name\nis jessica'],
+      'correctChoice': 'Hi my name\nis jessica',
     },
   ];
 
@@ -203,6 +203,7 @@ void replayLevel() {
                       _choiceButton(_questionsData[_currentQuestionIndex]['choices'][2], screenWidth),
                     ],
                   ),
+                   SizedBox(height: 10),
                   _choiceButton(_questionsData[_currentQuestionIndex]['choices'][1], screenWidth),
                 ],
               ),

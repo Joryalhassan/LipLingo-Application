@@ -19,20 +19,20 @@ class _Level10State extends State<Level10> {
     {
       'videoAsset': 'assets/Q28-IgotBananas.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['I got bananas', 'I love bananas', 'I got botatoes'],
-      'correctChoice': 'I got bananas',
+      'choices': ['I got\n bananas', 'I love bananas', 'I got\nbotatoes'],
+      'correctChoice': 'I got\n bananas',
     },
     {
       'videoAsset': 'assets/Q29-Igotmilk.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['I like milk', 'I got milk', 'I grap milk'],
-      'correctChoice': 'I got milk',
+      'choices': ['I like\n milk', 'I got\n milk', 'I grap\n milk'],
+      'correctChoice': 'I got\n milk',
     },
     {
       'videoAsset': 'assets/Q30-Igotpork.mp4',
       'questionText': 'Select what did she say?',
-      'choices': ['I ate pork', 'I am bold', 'I got pork'],
-      'correctChoice': 'I got pork',
+      'choices': ['I ate\n pork', 'I am\n bold', 'I got\n pork'],
+      'correctChoice': 'I got\n pork',
     },
   ];
 
@@ -203,6 +203,7 @@ void replayLevel() {
                       _choiceButton(_questionsData[_currentQuestionIndex]['choices'][2], screenWidth),
                     ],
                   ),
+                   SizedBox(height: 10),
                   _choiceButton(_questionsData[_currentQuestionIndex]['choices'][1], screenWidth),
                 ],
               ),
