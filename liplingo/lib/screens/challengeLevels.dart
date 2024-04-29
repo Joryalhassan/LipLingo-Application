@@ -3,6 +3,16 @@ import '../reusable_widget/reusable_widget.dart';
 import 'package:liplingo/screens/academy.dart';
 import 'package:liplingo/screens/level1.dart';
 import 'package:liplingo/screens/level2.dart';
+import 'package:liplingo/screens/level3.dart';
+import 'package:liplingo/screens/level4.dart';
+import 'package:liplingo/screens/level5.dart';
+import 'package:liplingo/screens/level6.dart';
+import 'package:liplingo/screens/level7.dart';
+import 'package:liplingo/screens/level8.dart';
+import 'package:liplingo/screens/level9.dart';
+import 'package:liplingo/screens/level10.dart';
+import 'package:liplingo/screens/level11.dart';
+import 'package:liplingo/screens/level12.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -160,6 +170,36 @@ class ChallengeCard extends StatelessWidget {
         break;
       case 2:
         Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level2()));
+        break;
+        case 3:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level3()));
+        break;
+        case 4:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level4()));
+        break;
+        case 5:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level5()));
+        break;
+        case 6:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level6()));
+        break;
+        case 7:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level7()));
+        break;
+        case 8:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level8()));
+        break;
+        case 9:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level9()));
+        break;
+        case 10:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level10()));
+        break;
+        case 11:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level11()));
+        break;
+        case 12:
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => Level12()));
         break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Level $levelNumber is under construction')));

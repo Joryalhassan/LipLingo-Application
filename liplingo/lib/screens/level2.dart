@@ -23,7 +23,7 @@ class _Level2State extends State<Level2> {
       'correctChoice': 'The',
     },
     {
-      'videoAsset': 'assets/Q5-Three.mp4',
+      'videoAsset': 'assets/Q5-three.mp4',
       'questionText': 'Select what did she say?',
       'choices': ['Three', 'Tree', 'Me'],
       'correctChoice': 'Three',
@@ -78,9 +78,6 @@ void replayLevel() {
     });
   }
 }
-
-
-
 
   @override
   void dispose() {
@@ -217,46 +214,52 @@ void replayLevel() {
     );
   }
 
+  ButtonStyle _commonButtonStyle({required Color backgroundColor, required Color textColor, Color? borderColor}) {
+  return ElevatedButton.styleFrom(
+    primary: backgroundColor,
+    onPrimary: textColor,
+    textStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+    side: borderColor != null ? BorderSide(color: borderColor, width: 2) : BorderSide.none,
+    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 60),
+  );
+}
+
   Widget _choiceButton(String choice, double screenWidth) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: _selectedChoice == choice ? Colors.blue : Colors.grey[300]!,
-        onPrimary: Colors.black,
-        textStyle: TextStyle(fontSize: screenWidth * 0.04),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        side: BorderSide(color: Colors.blue, width: 2),
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 60),
-      ),
-      onPressed: () {
-        setState(() {
-          _hasMadeChoice = true;
-          _selectedChoice = choice;
-        });
-      },
-      child: Text(choice),
-    );
-  }
+  bool isSelected = _selectedChoice == choice;
+  return ElevatedButton(
+    style: _commonButtonStyle(
+      backgroundColor: isSelected ? Colors.blue : Colors.grey[300]!,
+      textColor: isSelected ? Colors.white: Colors.black,
+      borderColor: Colors.blue, // Always blue border for choice buttons
+    ),
+    onPressed: () {
+      setState(() {
+        _hasMadeChoice = true;
+        _selectedChoice = choice;
+      });
+    },
+    child: Text(choice),
+  );
+}
 
-  Widget _checkAnswerButton(double screenWidth, double screenHeight) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: screenHeight * 0.02),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: _hasMadeChoice ? Colors.green : Colors.grey,
-          onPrimary: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        onPressed: _hasMadeChoice ? _checkAnswer : null,
-        child: Text('Check', style: TextStyle(fontSize: screenWidth * 0.045)),
+Widget _checkAnswerButton(double screenWidth, double screenHeight) {
+  return Container(
+    width: double.infinity,
+    padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: screenHeight * 0.02),
+    child: ElevatedButton(
+      style: _commonButtonStyle(
+        backgroundColor: _hasMadeChoice ? Colors.green : Colors.grey,
+        textColor: Colors.white,
+        borderColor: null, // No border for the check button
       ),
-    );
-  }
-
+      onPressed: _hasMadeChoice ? _checkAnswer : null,
+      child: Text('Check', style: TextStyle(fontSize: screenWidth * 0.045)),
+    ),
+  );
+}
   void _checkAnswer() {
   bool isCorrect = _selectedChoice == _questionsData[_currentQuestionIndex]['correctChoice'];
   if (isCorrect) {

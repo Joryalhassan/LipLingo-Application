@@ -87,6 +87,36 @@ flutter:
      - assets/Q4-the.mp4
      - assets/Q5-three.mp4
      - assets/Q6-bus.mp4
+     - assets/Q7-will.mp4
+     - assets/Q8-mom.mp4
+     - assets/Q9-fast.mp4
+     - assets/Q10-five.mp4
+     - assets/Q11-laugh.mp4
+     - assets/Q12-ten.mp4
+     - assets/Q13-me.mp4
+     - assets/Q14-two.mp4
+     - assets/Q15-you.mp4
+     - assets/Q16-please.mp4
+     - assets/Q17-tall.mp4
+     - assets/Q18-four.mp4
+     - assets/Q19-not.mp4
+     - assets/Q20-mall.mp4
+     - assets/Q21-fly.mp4
+     - assets/Q22-thought.mp4
+     - assets/Q23-find.mp4
+     - assets/Q24-full.mp4
+     - assets/Q25-top.mp4
+     - assets/Q26-stop.mp4
+     - assets/Q27-fall.mp4
+     - assets/Q28-IgotBananas.mp4
+     - assets/Q29-Igotmilk.mp4
+     - assets/Q30-Igotpork.mp4
+     - assets/Q31-Igotvegetables.mp4
+     - assets/Q32-Igotfruit.mp4
+     - assets/Q33-himynameisjessica.mp4
+     - assets/Q34-whatweekend.mp4
+     - assets/Q35-whatholiday.mp4
+     - assets/Q36-where.mp4
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
