@@ -1,0 +1,7 @@
+
+//Challenges Model
+class Challenges{
+
+
+
+}

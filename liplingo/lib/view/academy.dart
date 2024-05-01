@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/reusableWidgets.dart';
-import 'package:liplingo/screens/challengeLevels.dart';
+import 'package:liplingo/view/challengeLevels.dart';
 import 'lessonList.dart';
 
 class AcademyScreen extends StatelessWidget {
@@ -13,15 +13,15 @@ class AcademyScreen extends StatelessWidget {
       appBar: topBar(context, "Academy"),
       // Main Body UI
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          //mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            Align(
+              alignment: Alignment.topCenter,
               child: Text(
-                'Here you can find lessons and challenges to help you get the hang of lip reading.',
+                'Here you can find lessons and \n challenges to help you get the hang \nof lip reading.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16, // Adjust font size to match design
@@ -29,7 +29,7 @@ class AcademyScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 32), // Adjust spacing to match design
+            SizedBox(height: 90), // Adjust spacing to match design
             // For Lessons Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),

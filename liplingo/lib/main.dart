@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/screens/signIn.dart';
+import 'package:liplingo/view/signIn.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:liplingo/view/viewText.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure plugins are initialized
@@ -17,10 +18,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
 
       //Remove Debug Banner
-      debugShowCheckedModeBanner: false,
-
-      home: SignInScreen(),
-    );
+        debugShowCheckedModeBanner: false,
+        home: ViewTextScreen(translatedText: 'Hello!'));
+    // home: SignInScreen(),
   }
 }
 

@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:liplingo/screens/savedTextList.dart';
-import 'package:liplingo/screens/videoPreview.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:liplingo/view/savedTextList.dart';
+import 'package:liplingo/view/videoPreview.dart';
 import 'package:video_player/video_player.dart';
 import '../utils/reusableWidgets.dart';
 import 'package:camera/camera.dart';
-import 'package:image_picker/image_picker.dart';
 
 class LipReadingScreen extends StatefulWidget {
   @override
@@ -15,6 +15,7 @@ class LipReadingScreen extends StatefulWidget {
 }
 
 class _LipReadingScreenState extends State<LipReadingScreen> {
+
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = true;
   bool _isRecording = false;
@@ -35,7 +36,6 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
     _cameraController.dispose();
     super.dispose();
   }
-
   _initCamera() async {
     final cameras = await availableCameras();
     final camera = _isFrontCamera
@@ -97,7 +97,7 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
     });
   }
 
-  Future<void> _pickVideo() async {
+  Future<void> _uploadVideo() async {
     try {
       final XFile? pickedFile = await _picker.pickVideo(
         source: ImageSource.gallery,
@@ -116,7 +116,7 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
               return Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius:
-                      BorderRadius.circular(20.0), // Adjust the value as needed
+                  BorderRadius.circular(20.0), // Adjust the value as needed
                 ),
                 child: Container(
                   padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
@@ -177,14 +177,14 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
           Navigator.push(context, route);
         }
       }
-    } on PlatformException catch (e) {
+    } on PlatformException {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius:
-                  BorderRadius.circular(20.0), // Adjust the value as needed
+              BorderRadius.circular(20.0), // Adjust the value as needed
             ),
             child: Container(
               padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
@@ -242,101 +242,16 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    //Loading Screen while camera is initialized
     if (_isLoading) {
-      return Scaffold(
-        // Top App Bar
-        appBar: topBar(context, "Lip Reading"),
-        body: Container(
-          color: Colors.white,
-          child: const Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        bottomNavigationBar: bottomBar(context, 0),
-      );
+      return _loadingScreen();
+
+      //Recording video screen
     } else if (_isRecording) {
-      return Scaffold(
-        appBar: AppBar(
-          leading: null,
-          backgroundColor: Colors.white,
-        ),
-        extendBodyBehindAppBar: true,
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            CameraPreview(_cameraController),
-            // Oval-shaped face fitting widget
-            ColorFiltered(
-              colorFilter: ColorFilter.mode(
-                  Colors.grey.withOpacity(0.2), BlendMode.srcOut),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.grey,
-                        backgroundBlendMode: BlendMode.dstOut),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 80),
-                      height: 350,
-                      width: 275,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.all(
-                          Radius.elliptical(300, 400),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(25),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    '$_seconds',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 25,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 75,
-                    width: 75,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CircularProgressIndicator(
-                          value: _seconds / 60,
-                          strokeWidth: 10,
-                          valueColor: AlwaysStoppedAnimation(Colors.red),
-                          backgroundColor: Colors.grey,
-                        ),
-                        FloatingActionButton(
-                          backgroundColor: Colors.white,
-                          onPressed: () => _recordVideo(),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 70),
-                ],
-              ),
-            ),
-          ],
-        ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.white,
-        ),
-      );
+      return _recordingScreen();
+
+      //LipReading Page
     } else {
       return Scaffold(
         // Top App Bar
@@ -347,28 +262,34 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
           child: Stack(
             alignment: Alignment.center,
             children: [
+
+              //Camera Stream
               CameraPreview(_cameraController),
+
+              //Face frame
               ColorFiltered(
                 colorFilter: ColorFilter.mode(
-                    Colors.grey.withOpacity(0.2), BlendMode.srcOut), // This one will create the magic
+                    Colors.grey.withOpacity(0.4), BlendMode.srcOut),
+                // This one will create the magic
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.grey,
-                          backgroundBlendMode: BlendMode.dstOut), // This one will handle background + difference out
+                          backgroundBlendMode: BlendMode
+                              .dstOut), // This one will handle background + difference out
                     ),
                     Align(
                       alignment: Alignment.center,
                       child: Container(
-                        margin: const EdgeInsets.only(top: 80),
+                        margin: const EdgeInsets.only(bottom: 170),
                         height: 350,
                         width: 275,
                         decoration: BoxDecoration(
                           color: Colors.blue,
                           borderRadius: BorderRadius.all(
-                              Radius.elliptical(300, 400),
+                            Radius.elliptical(300, 400),
                           ),
                         ),
                       ),
@@ -376,6 +297,8 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
                   ],
                 ),
               ),
+
+              //Buttons
               Padding(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).padding.bottom + 50),
@@ -424,45 +347,8 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                              vertical: 13.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            backgroundColor: Colors.blue,
-                          ),
-                          child: Text("Upload Video",
-                              style: TextStyle(
-                                fontSize: 18,
-                              )),
-                          onPressed: () {
-                            _pickVideo();
-                          },
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 20.0,
-                              vertical: 13.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            backgroundColor: Colors.blue,
-                          ),
-                          child: Text("Saved Text List",
-                              style: TextStyle(
-                                fontSize: 18,
-                              )),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => SavedTextListScreen()));
-                          },
-                        ),
+                        _buildButton("Upload Video"),
+                        _buildButton("Saved Text List"),
                       ],
                     ),
                     const SizedBox(height: 35),
@@ -476,4 +362,134 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
       );
     }
   }
+
+  Widget _loadingScreen() {
+    return Scaffold(
+      // Top App Bar
+      appBar: topBar(context, "Lip Reading"),
+      body: Container(
+        color: Colors.white,
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      bottomNavigationBar: bottomBar(context, 0),
+    );
+  }
+
+  Widget _recordingScreen(){
+    return Scaffold(
+      appBar: AppBar(
+        leading: null,
+        backgroundColor: Colors.white,
+      ),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          CameraPreview(_cameraController),
+          // Oval-shaped face fitting widget
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(
+                Colors.grey.withOpacity(0.2), BlendMode.srcOut),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      backgroundBlendMode: BlendMode.dstOut),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 170),
+                    height: 350,
+                    width: 275,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.all(
+                        Radius.elliptical(300, 400),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(25),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '$_seconds',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 25,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  height: 75,
+                  width: 75,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CircularProgressIndicator(
+                        value: _seconds / 60,
+                        strokeWidth: 10,
+                        valueColor: AlwaysStoppedAnimation(Colors.red),
+                        backgroundColor: Colors.grey,
+                      ),
+                      FloatingActionButton(
+                        backgroundColor: Colors.white,
+                        onPressed: () => _recordVideo(),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 70),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildButton(String _label)
+  {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(
+          horizontal: 20.0,
+          vertical: 13.0,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        backgroundColor: Colors.blue,
+      ),
+      child: Text(_label,
+          style: TextStyle(
+            fontSize: 18,
+          )),
+      onPressed: () {
+        if(_label == "Upload Video")
+        {
+          _uploadVideo();
+        } else if(_label == "Saved Text List")
+        {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => SavedTextListScreen()));
+        }
+      },
+    );
+  }
+
 }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:liplingo/screens/lipReading.dart';
-import 'package:liplingo/screens/resetPassword.dart';
-import 'package:liplingo/screens/signup.dart';
+import 'package:liplingo/view/resetPassword.dart';
+import 'package:liplingo/view/signUp.dart';
+import '../controller/userController.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key}) : super(key: key);
@@ -12,8 +11,9 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  // Initialize Firebase Authentication
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  //Initialize controller
+  UserController _userController = new UserController();
 
   // Initialize the form key for both forms
   final _formKeySignIn = GlobalKey<FormState>();
@@ -40,38 +40,6 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() {
       _errorMessage = null;
     });
-  }
-
-  //Check of successful Sign In using Firebase Auth
-  Future<void> _signInWithEmailAndPassword() async {
-    try {
-      // Log user in through firebase auth function.
-      await _auth.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
-
-      //Redirect to LipReading screen if no error encountered
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LipReadingScreen()));
-    } on FirebaseAuthException catch (e) {
-      // Handle errors
-      setState(() {
-        // Handle different types of FirebaseAuth errors
-        if (e.code == 'user-not-found' ||
-            e.code == 'wrong-password' ||
-            e.code == 'invalid-credential') {
-          // Update error message for incorrect login
-          _errorMessage = "Invalid Email or Password";
-        } else if(e.code == 'network-request-failed' ) {
-          // Update error message for no internet connection
-          _errorMessage = "No internet connection";
-        } else {
-        // Handle other types of FirebaseAuthException errors
-        _errorMessage = "There's been an error. Try again later";
-        }
-      });
-    }
   }
 
   //UI Components
@@ -113,6 +81,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      //Email Field
                       Text(
                         "Email:",
                         style: TextStyle(
@@ -123,8 +92,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       const SizedBox(height: 3),
                       TextFormField(
                         controller: _emailController,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         // Validate while typing
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Email is required';
@@ -149,6 +118,8 @@ class _SignInScreenState extends State<SignInScreen> {
                         style: TextStyle(fontSize: 15),
                       ),
                       const SizedBox(height: 12),
+
+                      //Password Field
                       Text(
                         "Password:",
                         style: TextStyle(
@@ -216,30 +187,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ),
                       ]),
-                      Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 230,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKeySignIn.currentState!.validate()) {
-                                _signInWithEmailAndPassword();
-                              }
-                            },
-                            child: Text(
-                              "Log In",
-                              style: TextStyle(fontSize: 17),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
                       if (_errorMessage != null)
                         Align(
                           alignment: Alignment.center,
@@ -248,6 +195,38 @@ class _SignInScreenState extends State<SignInScreen> {
                             style: TextStyle(color: Colors.red),
                           ),
                         ),
+                      const SizedBox(height: 5),
+                      Align(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: 230,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (_formKeySignIn.currentState!.validate()) {
+
+                                  String? _message = await _userController.signIn(context, _emailController.text.trim(), _passwordController.text.trim());
+
+                                  if(_message != null) {
+                                    setState(() {
+                                        _errorMessage = _message;
+                                      });
+                                  }
+                                }
+                              },
+                            child: Text(
+                              "Log In",
+                              style: TextStyle(fontSize: 17),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              backgroundColor: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 25),
                         child: Row(

@@ -1,39 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:liplingo/screens/checkpage.dart';
-import 'package:liplingo/screens/challengeResult.dart';
-class Level2 extends StatefulWidget {
+import 'package:liplingo/view/challengeResult.dart';
+import '../controller/challengeController.dart';
+import '../utils/reusableWidgets.dart';
+
+class Level extends StatefulWidget {
+  final List<Map<String, dynamic>> questionsData;
+
+  const Level({Key? key, required this.questionsData})
+      : super(key: key);
+
   @override
-  _Level2State createState() => _Level2State();
+  _LevelState createState() => _LevelState();
 }
 
-class _Level2State extends State<Level2> {
+class _LevelState extends State<Level> {
+
   late VideoPlayerController _videoController;
   bool _isPlaying = false;
   bool _hasMadeChoice = false;
   String? _selectedChoice;
   int _currentQuestionIndex = 0;
   int _correctAnswersCount = 0; // Counter for the number of correct answers
-  List<Map<String, dynamic>> _questionsData = [
-    {
-      'videoAsset': 'assets/Q4-the.mp4',
-      'questionText': 'Select what did she say?',
-      'choices': ['Tall', 'That', 'The'],
-      'correctChoice': 'The',
-    },
-    {
-      'videoAsset': 'assets/Q5-Three.mp4',
-      'questionText': 'Select what did she say?',
-      'choices': ['Three', 'Tree', 'Me'],
-      'correctChoice': 'Three',
-    },
-    {
-      'videoAsset': 'assets/Q6-bus.mp4',
-      'questionText': 'Select what did she say?',
-      'choices': ['Sun', 'Bus', 'Mug'],
-      'correctChoice': 'Bus',
-    },
-  ];
 
   @override
   void initState() {
@@ -42,7 +30,7 @@ class _Level2State extends State<Level2> {
   }
 
   void _initVideoPlayer() {
-    _videoController = VideoPlayerController.asset(_questionsData[_currentQuestionIndex]['videoAsset'])
+    _videoController = VideoPlayerController.asset(widget.questionsData[_currentQuestionIndex]['videoAsset'])
       ..initialize().then((_) {
         setState(() {});
       });
@@ -60,16 +48,23 @@ class _Level2State extends State<Level2> {
     }
   }
 
-  void resetQuiz() {
-    setState(() {
-      _currentQuestionIndex = 0;
-      _correctAnswersCount = 0;
-      _hasMadeChoice = false;
-      _selectedChoice = null;
-      _videoController.dispose();
-      _initVideoPlayer();
-    });
+  void navigateToResult() async {
+    // Call the update progress method before navigating to the result screen
+    await ChallengeController.updateLevelProgress(1, _correctAnswersCount);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChallengeResult(
+          levelNumber: 1,
+          numberOfStars: _correctAnswersCount,
+
+        ),
+      ),
+    );
   }
+
+
 
   @override
   void dispose() {
@@ -181,7 +176,7 @@ class _Level2State extends State<Level2> {
             ),
             SizedBox(height: 10),
             Text(
-              _questionsData[_currentQuestionIndex]['questionText'],
+              widget.questionsData[_currentQuestionIndex]['questionText'],
               style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold),
             ),
             Padding(
@@ -191,11 +186,11 @@ class _Level2State extends State<Level2> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _choiceButton(_questionsData[_currentQuestionIndex]['choices'][0], screenWidth),
-                      _choiceButton(_questionsData[_currentQuestionIndex]['choices'][2], screenWidth),
+                      _choiceButton(widget.questionsData[_currentQuestionIndex]['choices'][0], screenWidth),
+                      _choiceButton(widget.questionsData[_currentQuestionIndex]['choices'][2], screenWidth),
                     ],
                   ),
-                  _choiceButton(_questionsData[_currentQuestionIndex]['choices'][1], screenWidth),
+                  _choiceButton(widget.questionsData[_currentQuestionIndex]['choices'][1], screenWidth),
                 ],
               ),
             ),
@@ -205,18 +200,26 @@ class _Level2State extends State<Level2> {
       ),
     );
   }
+  ButtonStyle _commonButtonStyle({required Color backgroundColor, required Color textColor, Color? borderColor}) {
+    return ElevatedButton.styleFrom(
+      primary: backgroundColor,
+      onPrimary: textColor,
+      textStyle: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.04),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      side: borderColor != null ? BorderSide(color: borderColor, width: 2) : BorderSide.none,
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 60),
+    );
+  }
 
   Widget _choiceButton(String choice, double screenWidth) {
+    bool isSelected = _selectedChoice == choice;
     return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        primary: _selectedChoice == choice ? Colors.blue : Colors.grey[300]!,
-        onPrimary: Colors.black,
-        textStyle: TextStyle(fontSize: screenWidth * 0.04),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        side: BorderSide(color: Colors.blue, width: 2),
-        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 60),
+      style: _commonButtonStyle(
+        backgroundColor: isSelected ? Colors.blue : Colors.grey[300]!,
+        textColor: isSelected ? Colors.white: Colors.black,
+        borderColor: Colors.blue, // Always blue border for choice buttons
       ),
       onPressed: () {
         setState(() {
@@ -233,12 +236,10 @@ class _Level2State extends State<Level2> {
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: screenHeight * 0.02),
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          primary: _hasMadeChoice ? Colors.green : Colors.grey,
-          onPrimary: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
+        style: _commonButtonStyle(
+          backgroundColor: _hasMadeChoice ? Colors.green : Colors.grey,
+          textColor: Colors.white,
+          borderColor: null, // No border for the check button
         ),
         onPressed: _hasMadeChoice ? _checkAnswer : null,
         child: Text('Check', style: TextStyle(fontSize: screenWidth * 0.045)),
@@ -246,8 +247,9 @@ class _Level2State extends State<Level2> {
     );
   }
 
+
   void _checkAnswer() {
-    bool isCorrect = _selectedChoice == _questionsData[_currentQuestionIndex]['correctChoice'];
+    bool isCorrect = _selectedChoice == widget.questionsData[_currentQuestionIndex]['correctChoice'];
     if (isCorrect) {
       _correctAnswersCount++;
     }
@@ -257,16 +259,16 @@ class _Level2State extends State<Level2> {
         context,
         MaterialPageRoute(
           builder: (context) => ChallengeResult(
-            levelNumber:2,
+            levelNumber:1,
             numberOfStars: _correctAnswersCount,
-            onReplay: resetQuiz,
+
           ),
         ),
       );
     }
 
     void goToNextOrResult() {
-      if (_currentQuestionIndex == _questionsData.length - 1) {
+      if (_currentQuestionIndex == widget.questionsData.length - 1) {
         // After the third question, show the ChallengeResult
         navigateToResult();
       } else {

@@ -1,72 +1,9 @@
 //this page to help us to  make the design consistent between pages
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:liplingo/screens/academy.dart';
-import 'package:liplingo/screens/lipReading.dart';
-import 'package:liplingo/screens/signIn.dart';
-import 'package:liplingo/screens/accountSettings.dart';
-
-// Text field
-TextField reusableTextField(String text, IconData icon, bool isPasswordType,
-    TextEditingController controller) {
-  return TextField(
-    controller: controller,
-    obscureText: isPasswordType,
-    enableSuggestions: !isPasswordType,
-    autocorrect: !isPasswordType,
-    cursorColor: Colors.white,
-    style: TextStyle(color: Colors.white.withOpacity(0.9)),
-    decoration: InputDecoration(
-      prefixIcon: Icon(icon, color: Colors.white70),
-      labelText: text,
-      labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
-      filled: true,
-      floatingLabelBehavior: FloatingLabelBehavior.never,
-      fillColor: Colors.white.withOpacity(0.3),
-      border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: const BorderSide(width: 0, style: BorderStyle.none)),
-    ),
-    keyboardType: isPasswordType
-        ? TextInputType.visiblePassword
-        : TextInputType.emailAddress,
-  );
-}
-
-//sign up+in buttons
-Container signInSignUpButton(
-    BuildContext context, bool isLogin, Function onTap) {
-  return Container(
-    width: MediaQuery.of(context).size.width,
-    height: 50,
-    margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(90)),
-    child: ElevatedButton(
-      onPressed: () {
-        onTap(); // Corrected from 'onTap()' to 'onTap()'
-      },
-      child: Text(
-        isLogin ? 'LOG IN' : 'SIGN UP',
-        style: const TextStyle(
-          color: Colors.white70,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
-      ),
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.pressed)) {
-            return Colors.blue.shade50;
-          }
-          return Colors.blue;
-        }),
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-        ),
-      ),
-    ),
-  );
-}
+import 'package:liplingo/controller/userController.dart';
+import 'package:liplingo/view/academy.dart';
+import 'package:liplingo/view/lipReading.dart';
+import 'package:liplingo/view/accountSettings.dart';
 
 //Top App Bar - Receives the name of the current screen and displays it along with the profile button and logout button.
 AppBar topBar(BuildContext context, String screenName) {
@@ -114,142 +51,123 @@ AppBar topBar(BuildContext context, String screenName) {
   );
 }
 
+//Logout confirmation dialog
 void showLogoutConfirmation(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0), // Adjust the value as needed
+          borderRadius:
+              BorderRadius.circular(20.0), // Adjust the value as needed
         ),
         child: Container(
-          padding: EdgeInsets.fromLTRB(40,35,40,30),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                  "Logout?",
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w700,
-
-                  )
-              ),
-              const SizedBox(height: 10),
-              Text(
-                  "Are you sure you would like to logout?",
-                  style: TextStyle(
-                    fontSize: 17,
-                  )
-              ),
-              const SizedBox(height: 25),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  OutlinedButton(
-                    child: Text(
-                        "Cancel",
-                        style: TextStyle(
-                          fontSize: 17,
-                        )
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 25.0,
-                        vertical: 10.0,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      side: BorderSide(
-                          width: 1,
-                          color: Colors.blue
-                      ),
-                    ),
-                    onPressed: () {
-                        Navigator.of(context).pop();
+                  Text("Logout?",
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700,
+                      )),
+                  const SizedBox(height: 10),
+                  Text("Are you sure you would like to logout?",
+                      style: TextStyle(
+                        fontSize: 17,
+                      )),
+                  const SizedBox(height: 25),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OutlinedButton(
+                        child: Text("Cancel",
+                            style: TextStyle(
+                              fontSize: 17,
+                            )),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25.0,
+                            vertical: 10.0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          side: BorderSide(width: 1, color: Colors.blue),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
                         },
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 25.0,
-                        vertical: 10.0,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      backgroundColor: Colors.red[700],
-                    ),
-                      child: Text(
-                          "Logout",
-                          style: TextStyle(
-                            fontSize: 17,
-                          )
-                      ),
-                    onPressed: () {
-                        _signOut(context);
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 25.0,
+                            vertical: 10.0,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          backgroundColor: Colors.red[700],
+                        ),
+                        child: Text("Logout",
+                            style: TextStyle(
+                              fontSize: 17,
+                            )),
+                        onPressed: () {
+                          UserController _userController = new UserController();
+                          _userController.signOut(context);
                         },
-                  ),
-                ],
-              )
-
-            ]
-          )
-        ),
+                      ),
+                    ],
+                  )
+                ])),
       );
     },
   );
 }
 
-
-//Signout Function
-Future<void> _signOut(context) async {
-  await FirebaseAuth.instance.signOut();
-
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => SignInScreen()),
-  );
-}
-
 //Bottom page navigation bar
-BottomNavigationBar bottomBar(BuildContext context, int index) {
-  return BottomNavigationBar(
-    type: BottomNavigationBarType.fixed,
-    currentIndex: index,
-    items: const <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: ImageIcon(
-          AssetImage('assets/NavBar_LipReading.png'), // Corrected usage
+SizedBox bottomBar(BuildContext context, int index) {
+  return SizedBox(
+    height: 65,
+    child: BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: index,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: ImageIcon(
+            AssetImage('assets/NavBar_LipReading.png'), // Corrected usage
+          ),
+          label: 'LipReading',
         ),
-        label: 'LipReading',
-      ),
-      BottomNavigationBarItem(
-        icon: ImageIcon(
-          AssetImage('assets/NavBar_Academy.png'), // Corrected usage
+        BottomNavigationBarItem(
+          icon: ImageIcon(
+            AssetImage('assets/NavBar_Academy.png'), // Corrected usage
+          ),
+          label: 'Academy',
         ),
-        label: 'Academy',
-      ),
-    ],
-    onTap: (int index) {
-      // Handle onTap event for each item
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LipReadingScreen()),
-        );
-      } else if (index == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AcademyScreen()),
-        );
-      }
-    },
+      ],
+      onTap: (int index) {
+        // Handle onTap event for each item
+        if (index == 0) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LipReadingScreen()),
+          );
+        } else if (index == 1) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AcademyScreen()),
+          );
+        }
+      },
+    ),
   );
 }
 
+//Back button
 IconButton backButton(BuildContext context) {
   return IconButton(
     icon: Container(
@@ -267,13 +185,12 @@ IconButton backButton(BuildContext context) {
       ),
     ),
     onPressed: () {
-      // Navigate back when the button is pressed
       Navigator.pop(context);
     },
   );
 }
 
-//Empty Text List Widget - Saved Text List Page
+//Empty Text List Widget - SavedTextListScreen
 Container emptySavedTextList() {
   return Container(
     width: 200,
@@ -316,4 +233,56 @@ Container emptySavedTextList() {
       ),
     ),
   );
+}
+
+//Result page - Challenegs Screen
+class CorrectPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.of(context).pop(); // Automatically go back after 2 seconds
+    });
+
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 100),
+            SizedBox(height: 20),
+            Text(
+              'Correct!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//Result page - Challenegs Screen
+class WrongPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 2), () {
+      Navigator.of(context).pop(); // Automatically go back after 2 seconds
+    });
+
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.cancel, color: Colors.red, size: 100),
+            SizedBox(height: 20),
+            Text(
+              'Wrong!',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

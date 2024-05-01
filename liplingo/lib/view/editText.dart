@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:liplingo/view/viewText.dart';
 import '../utils/reusableWidgets.dart';
 
 class EditTextScreen extends StatefulWidget {
   final String initialText;
-  final Function(String) onSave;
-
   const EditTextScreen(
-      {Key? key, required this.initialText, required this.onSave})
+      {Key? key, required this.initialText})
       : super(key: key);
 
   @override
@@ -14,6 +13,7 @@ class EditTextScreen extends StatefulWidget {
 }
 
 class _EditTextScreenState extends State<EditTextScreen> {
+
   //Initialize form controller
   late TextEditingController _textEditingController;
   final _formKeyEditText = GlobalKey<FormState>();
@@ -119,8 +119,8 @@ class _EditTextScreenState extends State<EditTextScreen> {
                             )),
                         onPressed: () {
                           if (_formKeyEditText.currentState!.validate()) {
-                            widget.onSave(_textEditingController.text);
-                            Navigator.pop(context);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ViewTextScreen(translatedText: _textEditingController.text)));
                           }
                         },
                       ),

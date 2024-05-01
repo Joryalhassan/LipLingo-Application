@@ -44,6 +44,7 @@ dependencies:
   shared_preferences: ^2.2.2
   camera: ^0.9.4+19
   image_picker: ^0.8.3
+  flick_video_player: ^0.5.0
 
 dev_dependencies:
   flutter_test:
