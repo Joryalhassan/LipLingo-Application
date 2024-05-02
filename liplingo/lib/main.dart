@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/screens/signIn.dart';
+import 'package:liplingo/view/signIn.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -11,12 +11,14 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of our application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
- 
-      home: SignInScreen(),
+
+      //Remove Debug Banner
+        debugShowCheckedModeBanner: false,
+        home: SignInScreen(),
     );
   }
 }
