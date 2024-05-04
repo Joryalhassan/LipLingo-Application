@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/view/lessonVideo.dart';
+import '../view/lessonVideo.dart';
 import '../controller/lessonController.dart';
 import '../model/lessonModel.dart';
 import '../utils/reusableWidgets.dart';
@@ -42,126 +42,7 @@ class _LessonListScreen extends State<LessonListScreen> {
                     alignment: Alignment.centerLeft,
                     child: backButton(context),
                   ),
-                  // White rectangle card with progress counter and text
-                  FutureBuilder(
-                    future: _lessonController.getUserProgress(),
-                    builder: (_, userProgressSnapshot) {
-                      if (userProgressSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-
-                      var userProgress = userProgressSnapshot.data ?? [0, 0];
-
-                      return Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30.0, vertical: 20),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                // Align rows horizontally
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start, // Align left
-                                    children: [
-                                      Text(
-                                        "Progress:",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 22.0, // Larger font size
-                                        ),
-                                      ),
-                                      SizedBox(height: 6.0),
-                                      Text(
-                                        userProgress[0].toString() +
-                                            " out of " +
-                                            userProgress[1].toString() +
-                                            " lessons \ncomplete",
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 17.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  // Circular progress indicator with fraction text overlay
-                                  Stack(
-                                    children: [
-                                      // Background circle (grey) - centered with size
-                                      Center(
-                                        child: SizedBox(
-                                          width: 70.0,
-                                          height: 70.0,
-                                          child: CircularProgressIndicator(
-                                            value: 1.0,
-                                            // Full circle
-                                            strokeWidth: 9.0,
-                                            // Adjust stroke width as needed
-                                            color: Colors.grey[
-                                                400], // Set background color to grey
-                                          ),
-                                        ),
-                                      ),
-
-                                      // Foreground circle (blue) - centered and same size
-                                      Center(
-                                        child: Stack(
-                                          children: [
-                                            // Unchanged blue progress indicator
-                                            SizedBox(
-                                              width: 70.0,
-                                              height: 70.0,
-                                              child: CircularProgressIndicator(
-                                                value: userProgress[0] /
-                                                    userProgress[1],
-                                                // Adjust based on progress
-                                                strokeWidth: 9.0,
-                                                // Keep the stroke width the same
-                                                color: Colors
-                                                    .blue, // Maintain the blue color
-                                              ),
-                                            ),
-
-                                            // Positioned fraction text
-                                            Positioned(
-                                              top: 22.0,
-                                              // Adjust vertical position as needed
-                                              left: 17.0,
-                                              // Adjust horizontal position as needed
-                                              child: Text(
-                                                userProgress[0].toString() +
-                                                    "/" +
-                                                    userProgress[1].toString(),
-                                                // Replace with dynamic fraction
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 25.0,
-                                                  // Adjust font size as needed
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                  _loadUserProgress(),
                   Column(
                     children: [
                       SizedBox(height: 20.0),
@@ -235,6 +116,129 @@ class _LessonListScreen extends State<LessonListScreen> {
       bottomNavigationBar: bottomBar(context, 1),
     );
   }
+  Widget _loadUserProgress(){
+    return Column(children: [
+      FutureBuilder(
+        future: _lessonController.getUserProgress(),
+        builder: (_, userProgressSnapshot) {
+          if (userProgressSnapshot.connectionState ==
+              ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          var userProgress = userProgressSnapshot.data ?? [0, 0];
+
+          return Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 30.0, vertical: 20),
+                  child: Row(
+                    mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                    // Align rows horizontally
+                    children: [
+                      Column(
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align left
+                        children: [
+                          Text(
+                            "Progress:",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22.0, // Larger font size
+                            ),
+                          ),
+                          SizedBox(height: 6.0),
+                          Text(
+                            userProgress[0].toString() +
+                                " out of " +
+                                userProgress[1].toString() +
+                                " lessons \ncomplete",
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 17.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Circular progress indicator with fraction text overlay
+                      Stack(
+                        children: [
+                          // Background circle (grey) - centered with size
+                          Center(
+                            child: SizedBox(
+                              width: 70.0,
+                              height: 70.0,
+                              child: CircularProgressIndicator(
+                                value: 1.0,
+                                // Full circle
+                                strokeWidth: 9.0,
+                                // Adjust stroke width as needed
+                                color: Colors.grey[
+                                400], // Set background color to grey
+                              ),
+                            ),
+                          ),
+
+                          // Foreground circle (blue) - centered and same size
+                          Center(
+                            child: Stack(
+                              children: [
+                                // Unchanged blue progress indicator
+                                SizedBox(
+                                  width: 70.0,
+                                  height: 70.0,
+                                  child: CircularProgressIndicator(
+                                    value: userProgress[0] /
+                                        userProgress[1],
+                                    // Adjust based on progress
+                                    strokeWidth: 9.0,
+                                    // Keep the stroke width the same
+                                    color: Colors
+                                        .blue, // Maintain the blue color
+                                  ),
+                                ),
+
+                                // Positioned fraction text
+                                Positioned(
+                                  top: 22.0,
+                                  // Adjust vertical position as needed
+                                  left: 17.0,
+                                  // Adjust horizontal position as needed
+                                  child: Text(
+                                    userProgress[0].toString() +
+                                        "/" +
+                                        userProgress[1].toString(),
+                                    // Replace with dynamic fraction
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 25.0,
+                                      // Adjust font size as needed
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    ],);
+  }
 }
 
 class LessonCard extends StatelessWidget {
@@ -255,15 +259,15 @@ class LessonCard extends StatelessWidget {
     Color? cardColor = isCompleted ? (Colors.lightGreen[100]) : Colors.white;
     Icon icon = isCompleted
         ? Icon(
-            Icons.check_circle,
-            color: Colors.green[300],
-            size: 40.0,
-          )
+      Icons.check_circle,
+      color: Colors.green[300],
+      size: 40.0,
+    )
         : Icon(
-            Icons.arrow_circle_right_outlined,
-            color: Colors.blue,
-            size: 40.0,
-          );
+      Icons.arrow_circle_right_outlined,
+      color: Colors.blue,
+      size: 40.0,
+    );
 
     return InkWell(
       // Wrap the card in an InkWell for click feedback and navigation
@@ -306,4 +310,5 @@ class LessonCard extends StatelessWidget {
       ),
     );
   }
+
 }

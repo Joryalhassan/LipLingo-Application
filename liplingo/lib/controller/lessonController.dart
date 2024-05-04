@@ -17,7 +17,7 @@ class LessonController {
     try {
       // Retrieve the list of lessons
       List<DocumentReference> completedLessons = await getCompletedLessons();
-      QuerySnapshot<Map<String, dynamic>> lessonSnapshot = await FirebaseFirestore.instance.collection('Lessons').orderBy('level').get();
+      QuerySnapshot<Map<String, dynamic>> lessonSnapshot = await _database.collection('Lessons').orderBy('level').get();
 
       lessonSnapshot.docs.forEach((doc) {
 
@@ -57,7 +57,7 @@ class LessonController {
   }
 
   //Mark a lesson as complete or incomplete - LessonVideoScreen
-  Future<bool> markLessonComplete(String _lessonID) async {
+  Future<bool> updateLessonStatus(String _lessonID) async {
 
     try {
 

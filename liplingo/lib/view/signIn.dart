@@ -203,16 +203,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () async {
-                              if (_formKeySignIn.currentState!.validate()) {
-
-                                  String? _message = await _userController.signIn(context, _emailController.text.trim(), _passwordController.text.trim());
-
-                                  if(_message != null) {
-                                    setState(() {
-                                        _errorMessage = _message;
-                                      });
-                                  }
-                                }
+                              await checkSignIn();
                               },
                             child: Text(
                               "Log In",
@@ -255,5 +246,18 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> checkSignIn() async {
+     if (_formKeySignIn.currentState!.validate()) {
+
+        String? _message = await _userController.signIn(context, _emailController.text.trim(), _passwordController.text.trim());
+
+        if(_message != null) {
+          setState(() {
+              _errorMessage = _message;
+            });
+        }
+      }
   }
 }

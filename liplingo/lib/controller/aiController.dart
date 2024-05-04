@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class AIController {
 
-  //Implementation and intergration not complete on this version of the app
+  //Implementation and integration - not complete on this version of the app
   Future<String> interpretToText(File videoFile) async {
     try {
       var uri = Uri.parse('http://your-api-url.com/predict');

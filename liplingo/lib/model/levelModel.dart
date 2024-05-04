@@ -2,7 +2,7 @@
 class Level{
 
   String videoPath;
-  Object choices;
+  List<String> choices;
   String correctChoice;
 
   Level(this.videoPath, this.choices, this.correctChoice);

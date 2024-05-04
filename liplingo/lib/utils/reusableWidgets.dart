@@ -1,9 +1,9 @@
 //this page to help us to  make the design consistent between pages
 import 'package:flutter/material.dart';
-import 'package:liplingo/controller/userController.dart';
-import 'package:liplingo/view/academy.dart';
-import 'package:liplingo/view/lipReading.dart';
-import 'package:liplingo/view/accountSettings.dart';
+import '../controller/userController.dart';
+import '../view/academy.dart';
+import '../view/lipReading.dart';
+import '../view/accountSettings.dart';
 
 //Top App Bar - Receives the name of the current screen and displays it along with the profile button and logout button.
 AppBar topBar(BuildContext context, String screenName) {
@@ -43,7 +43,7 @@ AppBar topBar(BuildContext context, String screenName) {
             size: 30,
           ),
           onPressed: () {
-            showLogoutConfirmation(context);
+            confirmLogout(context);
           },
         ),
       )
@@ -52,78 +52,16 @@ AppBar topBar(BuildContext context, String screenName) {
 }
 
 //Logout confirmation dialog
-void showLogoutConfirmation(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius:
-              BorderRadius.circular(20.0), // Adjust the value as needed
-        ),
-        child: Container(
-            padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("Logout?",
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w700,
-                      )),
-                  const SizedBox(height: 10),
-                  Text("Are you sure you would like to logout?",
-                      style: TextStyle(
-                        fontSize: 17,
-                      )),
-                  const SizedBox(height: 25),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      OutlinedButton(
-                        child: Text("Cancel",
-                            style: TextStyle(
-                              fontSize: 17,
-                            )),
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 25.0,
-                            vertical: 10.0,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          side: BorderSide(width: 1, color: Colors.blue),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 25.0,
-                            vertical: 10.0,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          backgroundColor: Colors.red[700],
-                        ),
-                        child: Text("Logout",
-                            style: TextStyle(
-                              fontSize: 17,
-                            )),
-                        onPressed: () {
-                          UserController _userController = new UserController();
-                          _userController.signOut(context);
-                        },
-                      ),
-                    ],
-                  )
-                ])),
-      );
+void confirmLogout(BuildContext context) {
+  DialogUtils.displayCustomDialog(
+    context,
+    title: 'Logout?',
+    content: 'Are you sure you would like to logout?',
+    confirmButtonText: 'Logout',
+    cancelButtonText: 'Cancel',
+    onConfirm: () {
+      UserController _userController = new UserController();
+      _userController.signOut(context);
     },
   );
 }
@@ -235,7 +173,7 @@ Container emptySavedTextList() {
   );
 }
 
-//Result page - Challenegs Screen
+//Result page - Challenges Screen
 class CorrectPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -261,7 +199,7 @@ class CorrectPage extends StatelessWidget {
   }
 }
 
-//Result page - Challenegs Screen
+//Result page - Challenges Screen
 class WrongPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -283,6 +221,99 @@ class WrongPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+//Custom dialog class
+class DialogUtils {
+  static void displayCustomDialog(
+      BuildContext context, {
+        required String title,
+        required String content,
+        required String confirmButtonText,
+        required String cancelButtonText,
+        required VoidCallback onConfirm,
+      }) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  content,
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    OutlinedButton(
+                      child: Text(
+                        cancelButtonText,
+                        style: TextStyle(
+                          fontSize: 17,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 25.0,
+                          vertical: 10.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        side: BorderSide(width: 1, color: Colors.blue),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 27.0,
+                          vertical: 10.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        backgroundColor: Colors.red[700],
+                      ),
+                      child: Text(
+                        confirmButtonText,
+                        style: TextStyle(
+                          fontSize: 17,
+                        ),
+                      ),
+                      onPressed: onConfirm,
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

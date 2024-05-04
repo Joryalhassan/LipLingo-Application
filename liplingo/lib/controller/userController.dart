@@ -51,11 +51,16 @@ class UserController {
   //Function to check if email exists
   Future<bool> _checkEmailUnique(String email) async {
     try {
-      final List<String> signInMethods =
-          await _auth.fetchSignInMethodsForEmail(email);
-      // If the list is empty, the email is not in use
-      return signInMethods.isEmpty;
-    } catch (e) {
+      //Get document that matches the email
+      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await _database
+          .collection('Users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      //If any documents match the query, the email is not unique
+      return querySnapshot.docs.isEmpty;
+    } catch (error) {
       return false;
     }
   }
@@ -100,7 +105,7 @@ class UserController {
       // Check if the email exists
       bool emailExists = await _checkEmailUnique(email);
 
-      if (emailExists) {
+      if (!emailExists) {
         // If the email exists, proceed to send the reset password email
         await _auth.sendPasswordResetEmail(
           email: email,
@@ -217,7 +222,7 @@ class UserController {
     }
   }
 
-  //Signout Function called by confirmLogOutDialog- topBar in resuableWidgets and AccountSettings
+  //Signout Function called by confirmLogOutDialog- topBar in reusableWidgets and AccountSettings
   Future<void> signOut(context) async {
     try {
       await _auth.signOut();

@@ -9,12 +9,6 @@ class interpretedTextController {
   FirebaseFirestore _database = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance.currentUser;
 
-
-  void editText() {
-    //Found a more efficient way using only the view. Unsure if correct - will check.
-  }
-
-
   //Save Text called by the displaySavedTextForm widget - ViewTextScreen
   void saveText(InterpretedText _text) async {
     try {
@@ -58,6 +52,21 @@ class interpretedTextController {
     return savedTextList;
   }
 
+  //Search for specific text - SavedTextListScreen
+  Future<List<InterpretedText>> searchforSavedTexts(String searchText) async {
+    try {
+      List<InterpretedText> savedTexts = await getSavedTextList();
+
+      List<InterpretedText> filteredTexts = savedTexts.where((text) =>
+      text.title.toLowerCase().contains(searchText.toLowerCase()) ||
+          text.interpretedText.toLowerCase().contains(searchText.toLowerCase())).toList();
+
+      return filteredTexts;
+    } catch (error) {
+      return [];
+    }
+  }
+
   //Delete a saved text - SavedTextListScreen
   void deleteSpecificText(BuildContext context,
       InterpretedText interpretedText) async {
@@ -71,4 +80,5 @@ class interpretedTextController {
       throw error;
     }
   }
+
 }

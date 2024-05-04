@@ -102,29 +102,7 @@ class _resetPasswordState extends State<resetPassword> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_formKeyResetPassword.currentState!.validate()) {
-                          String? _message = await _userController.resetPassword(_resetPasswordEmailController.text.trim());
-
-                          if (_message != null) {
-                            setState(() {
-                              // Handle different types of FirebaseAuth errors
-                              _errorMessage = _message;
-                            }); } else {
-
-                            // Close bottom drawer if no error encountered
-                            Navigator.pop(context);
-
-                            // Show Success Message Snackbar
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text(
-                                    'Password reset email sent successfully!'),
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
-                          }
-                        }
+                        await _checkResetPassword();
                       },
                       // Disable the button if _isSendingEmail is true
                       child: Text(
@@ -146,5 +124,31 @@ class _resetPasswordState extends State<resetPassword> {
         ),
       ),
     );
+  }
+
+  Future<void> _checkResetPassword() async {
+    if (_formKeyResetPassword.currentState!.validate()) {
+      String? _message = await _userController.resetPassword(_resetPasswordEmailController.text.trim());
+
+      if (_message != null) {
+        setState(() {
+          // Handle different types of FirebaseAuth errors
+          _errorMessage = _message;
+        }); } else {
+
+        // Close bottom drawer if no error encountered
+        Navigator.pop(context);
+
+        // Show Success Message Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text(
+                'Password reset email sent successfully!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 }

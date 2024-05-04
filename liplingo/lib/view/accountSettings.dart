@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter/url_launcher.dart';
-
-import 'package:liplingo/view/help.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../view/help.dart';
 import 'SignIn.dart';
 import 'editProfile.dart';
-
-import 'package:liplingo/utils/reusableWidgets.dart';
-import 'package:liplingo/controller/userController.dart';
+import '../utils/reusableWidgets.dart';
+import '../controller/userController.dart';
 import '../model/userModel.dart';
 
 class AccountSettingsScreen extends StatelessWidget {
-
   //Initialize Controller
   UserController _userController = new UserController();
 
@@ -36,7 +33,7 @@ class AccountSettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               mainAxisAlignment:
-              MainAxisAlignment.center, // Center content vertically
+                  MainAxisAlignment.center, // Center content vertically
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // User Photo, Username, and Edit Profile Button
@@ -46,21 +43,25 @@ class AccountSettingsScreen extends StatelessWidget {
                 SizedBox(height: 60),
 
                 // Clickable Options - Clear Text Data, Contact Us, Help
+                _buildClickableOption(context, 'Clear Text Data', Icons.clear,
+                    () => confirmDeleteSavedTextList(context)),
+                SizedBox(height: 16), // Add space between options
                 _buildClickableOption(
-                    context, 'Clear Text Data', Icons.clear, () => showDeleteSavedTextDialog(context)),
+                    context, 'Contact Us', Icons.mail, _onContactUs),
                 SizedBox(height: 16), // Add space between options
-                _buildClickableOption(context, 'Contact Us', Icons.mail, _onContactUs),
-                SizedBox(height: 16), // Add space between options
-                _buildClickableOption(context, 'Help', Icons.help, () => _onHelp(context)),
+                _buildClickableOption(
+                    context, 'Help', Icons.help, () => _onHelp(context)),
 
                 // Space
                 SizedBox(height: 60),
 
                 // Clickable Options - Log Out, Delete Account
-                _buildClickableOption(context, 'Log Out', Icons.logout, () => showLogoutConfirmation(context)),
+                _buildClickableOption(context, 'Log Out', Icons.logout,
+                    () => confirmLogout(context)),
 
                 SizedBox(height: 16), // Add space between options
-                _buildClickableOption(context, 'Delete Account', Icons.delete, () => showDeleteAccountDialog(context)),
+                _buildClickableOption(context, 'Delete Account', Icons.delete,
+                    () => confirmAccountDeletion(context)),
               ],
             ),
           ),
@@ -78,15 +79,18 @@ class AccountSettingsScreen extends StatelessWidget {
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-
           var _userData = snapshot.data;
-          String username = (_userData!.firstName + " " + _userData.lastName) ?? 'Full Name';
+          String username =
+              (_userData!.firstName + " " + _userData.lastName) ?? 'Full Name';
 
           return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen(userData: _userData,)),
+                MaterialPageRoute(
+                    builder: (context) => EditProfileScreen(
+                          userData: _userData,
+                        )),
               );
             },
             child: Container(
@@ -135,7 +139,6 @@ class AccountSettingsScreen extends StatelessWidget {
       },
     );
   }
-
 
   Widget _buildClickableOption(BuildContext context, String text, IconData icon,
       VoidCallback onTapCallback) {
@@ -194,11 +197,11 @@ class AccountSettingsScreen extends StatelessWidget {
     final String emailUri = emailLaunchUri.toString();
 
     try {
-      //await launch(emailUri);
+      await launch(emailUri);
     } catch (e) {
       print('Error launching email client: $e');
     }
-  } // remove try-catch if it workes on physical emulator
+  }
 
   void _onHelp(BuildContext context) {
     Navigator.push(
@@ -207,198 +210,70 @@ class AccountSettingsScreen extends StatelessWidget {
     );
   }
 
-  void showDeleteAccountDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius:
-            BorderRadius.circular(20.0), // Adjust the value as needed
-          ),
-          child: Container(
-              padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("Confirm Deletion?",
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w700,
-                        )),
-                    const SizedBox(height: 10),
-                    Text("Are you sure you would like to delete your account?",
-                        style: TextStyle(
-                          fontSize: 17,
-                        )),
-                    const SizedBox(height: 25),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        OutlinedButton(
-                          child: Text("Cancel",
-                              style: TextStyle(
-                                fontSize: 17,
-                              )),
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25.0,
-                              vertical: 10.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            side: BorderSide(width: 1, color: Colors.blue),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 27.0,
-                              vertical: 10.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            backgroundColor: Colors.red[700],
-                          ),
-                          child: Text("Delete",
-                              style: TextStyle(
-                                fontSize: 17,
-                              )),
-                          onPressed: () {
-                            try {
-                              //Delete account and navigate to sign in screen
-                              _userController.deleteAccount();
-                              Navigator.of(context).pop();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        SignInScreen()), // Navigate to your SignIn screen
-                              );
+  void confirmAccountDeletion(BuildContext context) {
+    DialogUtils.displayCustomDialog(
+      context,
+      title: 'Confirm Deletion?',
+      content: 'Are you sure you would like to delete your account?',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      onConfirm: () {
+        try {
+          //Delete account and navigate to sign in screen
+          _userController.deleteAccount();
+          Navigator.of(context).pop();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    SignInScreen()), // Navigate to your SignIn screen
+          );
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Account deleted successfully!"),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-
-                            } catch (error) {
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Unable to delete account."),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    )
-                  ])),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Account deleted successfully!"),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Unable to delete account."),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       },
     );
   }
 
+  void confirmDeleteSavedTextList(BuildContext context) {
+    DialogUtils.displayCustomDialog(
+      context,
+      title: 'Confirm Deletion?',
+      content: 'Are you sure you would like to delete all your saved texts?',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      onConfirm: () {
+        try {
+          _userController.clearSavedTextList();
+          Navigator.of(context).pop();
 
-  void showDeleteSavedTextDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius:
-            BorderRadius.circular(20.0), // Adjust the value as needed
-          ),
-          child: Container(
-              padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("Confirm Deletion?",
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w700,
-                        )),
-                    const SizedBox(height: 10),
-                    Text(
-                        "Are you sure you would like to delete all your saved texts?",
-                        style: TextStyle(
-                          fontSize: 17,
-                        )),
-                    const SizedBox(height: 25),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        OutlinedButton(
-                          child: Text("Cancel",
-                              style: TextStyle(
-                                fontSize: 17,
-                              )),
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25.0,
-                              vertical: 10.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            side: BorderSide(width: 1, color: Colors.blue),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 27.0,
-                              vertical: 10.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            backgroundColor: Colors.red[700],
-                          ),
-                          child: Text("Delete",
-                              style: TextStyle(
-                                fontSize: 17,
-                              )),
-                          onPressed: () {
-                            try {
-                              _userController.clearSavedTextList();
-                              Navigator.of(context).pop();
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Saved text list has been cleared!"),
-                                backgroundColor: Colors.green,
-                              ),);
-
-                            } catch(error){
-                              ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("Unable to delete saved text lists."),
-                                backgroundColor: Colors.red,
-                              ),);
-                            }
-                          },
-                        ),
-                      ],
-                    )
-                  ])),
-        );
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Saved text list has been cleared!"),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Unable to delete saved text lists."),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       },
     );
   }
-
 }

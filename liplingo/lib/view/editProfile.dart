@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:liplingo/controller/userController.dart';
-import 'package:liplingo/view/accountSettings.dart';
-
+import '../controller/userController.dart';
+import '../view/accountSettings.dart';
 import '../model/userModel.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -45,6 +44,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     mediaSize = MediaQuery.of(context).size;
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         elevation: 0.8,
         toolbarHeight: 60,
@@ -57,75 +57,68 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.grey[200]!,
-              Colors.grey[200]!,
-            ],
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 38, vertical: 45),
-          child: Form(
-            key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 15),
-                _buildEditableFormField('First Name', _fnameTextController),
-                _buildEditableFormField('Last Name', _lnameTextController),
-                _buildNonEditableFormField('Email', _userEmail),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 145,
-                      height: 45,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_changesMade) {
-                            _showDiscardChangesDialog();
-                          } else {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: Text(
-                          "Cancel",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+      body: SingleChildScrollView(
+        child: Container(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 38, vertical: 45),
+            child: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 15),
+                  _buildEditableFormField('First Name', _fnameTextController),
+                  _buildEditableFormField('Last Name', _lnameTextController),
+                  _buildNonEditableFormField('Email', _userEmail),
+                  _buildNonEditablePasswordField('Password'),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 145,
+                        height: 45,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_changesMade) {
+                              _showDiscardChangesDialog();
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    SizedBox(width: 16),
-                    SizedBox(
-                      width: 145,
-                      height: 45,
-                      child: ElevatedButton(
-                        onPressed: _saveChanges,
-                        child: Text(
-                          "Save Changes",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      SizedBox(width: 16),
+                      SizedBox(
+                        width: 145,
+                        height: 45,
+                        child: ElevatedButton(
+                          onPressed: _checkEditProfile,
+                          child: Text(
+                            "Save Changes",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -212,6 +205,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           ),
           style: TextStyle(fontSize: 14),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNonEditablePasswordField(String _label) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 10),
+        Text(
+          _label + ':',
+          style: TextStyle(
+            fontWeight: FontWeight.w400,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 3),
+        GestureDetector(
+          onTap: () {
+            _showPasswordConfirmation();
+          },
+          child: AbsorbPointer(
+            child: TextFormField(
+              obscureText: true,
+              initialValue: "**********",
+              enabled: false,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              ),
+              style: TextStyle(fontSize: 14),
+            ),
+          ),
         ),
       ],
     );
@@ -306,8 +339,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
-
-  void _saveChanges() {
+  void _checkEditProfile() {
     if (_formKey.currentState!.validate()) {
       try {
         Users _userData = new Users('', _fnameTextController.text.trim(),
@@ -333,11 +365,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // Navigate back
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  AccountSettingsScreen()),
+          MaterialPageRoute(builder: (context) => AccountSettingsScreen()),
         );
-
       } catch (error) {
         //Success SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
@@ -348,5 +377,89 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
       }
     }
+  }
+
+  //Update Password confirmation dialog
+  void _showPasswordConfirmation() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+            BorderRadius.circular(20.0), // Adjust the value as needed
+          ),
+          child: Container(
+              padding: EdgeInsets.fromLTRB(30, 35, 30, 30),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("Reset Password?",
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w700,
+                        )),
+                    const SizedBox(height: 10),
+                    Text("For security reasons, we will have to send a link to change your password to your email address.",
+                        style: TextStyle(
+                          fontSize: 17,
+                        )),
+                    const SizedBox(height: 25),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        OutlinedButton(
+                          child: Text("Cancel",
+                              style: TextStyle(
+                                fontSize: 17,
+                              )),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 25.0,
+                              vertical: 10.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            side: BorderSide(width: 1, color: Colors.blue),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.0,
+                              vertical: 10.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            backgroundColor: Colors.blue,
+                          ),
+                          child: Text("Send Email",
+                              style: TextStyle(
+                                fontSize: 17,
+                              )),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _userController.resetPassword(_userEmail);
+                            //Success SnackBar
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Reset password email sent!"),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    )
+                  ])),
+        );
+      },
+    );
   }
 }

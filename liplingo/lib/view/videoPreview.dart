@@ -15,7 +15,6 @@ class VideoPreviewScreen extends StatefulWidget {
 }
 
 class _VideoPreviewPageState extends State<VideoPreviewScreen> {
-
   late VideoPlayerController _videoPlayerController;
   AIController _aiController = new AIController();
 
@@ -35,6 +34,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0.8,
         toolbarHeight: 70,
@@ -56,9 +56,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
             ),
             onPressed: () async {
               _videoPlayerController.pause();
-              String translatedText = await _aiController.interpretToText(File(widget.filePath));
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => ViewTextScreen(translatedText: translatedText)));
+              await sendVideo();
             },
           ),
           IconButton(
@@ -74,19 +72,32 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
           )
         ],
       ),
-      body: FutureBuilder(
-        future: _initVideoPlayer(),
-        builder: (context, state) {
-          if (state.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else {
-            return AspectRatio(
-              aspectRatio: _videoPlayerController.value.aspectRatio,
-              child: VideoPlayer(_videoPlayerController),
-            );
-          }
-        },
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FutureBuilder(
+            future: _initVideoPlayer(),
+            builder: (context, state) {
+              if (state.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                return AspectRatio(
+                  aspectRatio: _videoPlayerController.value.aspectRatio,
+                  child: VideoPlayer(_videoPlayerController),
+                );
+              }
+            },
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> sendVideo() async {
+    String translatedText =
+        await _aiController.interpretToText(File(widget.filePath));
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) =>
+            ViewTextScreen(translatedText: translatedText)));
   }
 }

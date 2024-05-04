@@ -6,10 +6,10 @@ class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _TestSignUpState();
+  State<SignUpScreen> createState() => _SignUpState();
 }
 
-class _TestSignUpState extends State<SignUpScreen> {
+class _SignUpState extends State<SignUpScreen> {
   //Initialize controller
   UserController _userController = new UserController();
 
@@ -159,33 +159,7 @@ class _TestSignUpState extends State<SignUpScreen> {
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  if (_formKeyRegister.currentState!
-                                      .validate()) {
-                                    // Check if passwords match
-                                    if (_passwordController.text.trim() !=
-                                        _confirmPasswordController.text
-                                            .trim()) {
-                                      setState(() {
-                                        _errorMessage =
-                                            "Passwords do not match";
-                                      });
-                                    } else {
-                                      Users _userData = new Users(
-                                          '',
-                                          _fNameController.text.trim(),
-                                          _lNameController.text.trim(),
-                                          _emailController.text.trim(),
-                                          _passwordController.text.trim());
-                                      String? _message = await _userController
-                                          .signUp(context, _userData);
-
-                                      if (_message != null) {
-                                        setState(() {
-                                          _errorMessage = _message;
-                                        });
-                                      }
-                                    }
-                                  }
+                                  await checkSignUp;
                                 },
                                 child: Text(
                                   "Register",
@@ -211,6 +185,36 @@ class _TestSignUpState extends State<SignUpScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> checkSignUp() async {
+    if (_formKeyRegister.currentState!
+        .validate()) {
+      // Check if passwords match
+      if (_passwordController.text.trim() !=
+          _confirmPasswordController.text
+              .trim()) {
+        setState(() {
+          _errorMessage =
+              "Passwords do not match";
+        });
+      } else {
+        Users _userData = new Users(
+            '',
+            _fNameController.text.trim(),
+            _lNameController.text.trim(),
+            _emailController.text.trim(),
+            _passwordController.text.trim());
+        String? _message = await _userController
+            .signUp(context, _userData);
+
+        if (_message != null) {
+          setState(() {
+            _errorMessage = _message;
+          });
+        }
+      }
+    }
   }
 
   Widget _buildFormField(String _label, TextEditingController _controller) {

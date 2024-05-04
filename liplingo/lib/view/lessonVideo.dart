@@ -225,7 +225,7 @@ class _LessonVideState extends State<LessonVideoScreen> {
     setState(() {
       print(_isCompleted);
       // Handle marking complete
-      _lessonController.markLessonComplete((widget.lessonData.lessonID));
+      _lessonController.updateLessonStatus((widget.lessonData.lessonID));
       _isCompleted = !_isCompleted;
     });
   }

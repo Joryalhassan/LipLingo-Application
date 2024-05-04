@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import '../model/challengeModel.dart';
 import 'package:video_player/video_player.dart';
-import 'package:liplingo/view/challengeResult.dart';
+import '../view/challengeResult.dart';
 import '../controller/challengeController.dart';
 import '../utils/reusableWidgets.dart';
 
-class Level extends StatefulWidget {
-  final List<Map<String, dynamic>> questionsData;
+class ChallengeLevelScreen extends StatefulWidget {
+  final Challenge challengeData;
 
-  const Level({Key? key, required this.questionsData})
+  const ChallengeLevelScreen({Key? key, required this.challengeData})
       : super(key: key);
 
   @override
   _LevelState createState() => _LevelState();
 }
 
-class _LevelState extends State<Level> {
+class _LevelState extends State<ChallengeLevelScreen> {
 
+  ChallengeController _challengeController = new ChallengeController();
   late VideoPlayerController _videoController;
   bool _isPlaying = false;
   bool _hasMadeChoice = false;
@@ -27,10 +29,11 @@ class _LevelState extends State<Level> {
   void initState() {
     super.initState();
     _initVideoPlayer();
+    print(widget.challengeData.levels);
   }
 
   void _initVideoPlayer() {
-    _videoController = VideoPlayerController.asset(widget.questionsData[_currentQuestionIndex]['videoAsset'])
+    _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.challengeData.levels[_currentQuestionIndex].videoPath))
       ..initialize().then((_) {
         setState(() {});
       });
@@ -50,12 +53,12 @@ class _LevelState extends State<Level> {
 
   void navigateToResult() async {
     // Call the update progress method before navigating to the result screen
-    await ChallengeController.updateLevelProgress(1, _correctAnswersCount);
+    await _challengeController.updateLevelProgress(1, _correctAnswersCount);
 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => ChallengeResult(
+        builder: (context) => ChallengeResultScreen(
           levelNumber: 1,
           numberOfStars: _correctAnswersCount,
 
@@ -63,8 +66,6 @@ class _LevelState extends State<Level> {
       ),
     );
   }
-
-
 
   @override
   void dispose() {
@@ -74,7 +75,7 @@ class _LevelState extends State<Level> {
 
   double get _progressValue {
     // Adjust the formula to match the custom progression logic
-    switch (_currentQuestionIndex) {
+    switch (0) {
       case 0:
         return 0; // For the first question, 0%
       case 1:
@@ -176,7 +177,7 @@ class _LevelState extends State<Level> {
             ),
             SizedBox(height: 10),
             Text(
-              widget.questionsData[_currentQuestionIndex]['questionText'],
+              "Select what did she say?",
               style: TextStyle(fontSize: screenWidth * 0.05, fontWeight: FontWeight.bold),
             ),
             Padding(
@@ -186,11 +187,11 @@ class _LevelState extends State<Level> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _choiceButton(widget.questionsData[_currentQuestionIndex]['choices'][0], screenWidth),
-                      _choiceButton(widget.questionsData[_currentQuestionIndex]['choices'][2], screenWidth),
+                      _choiceButton(widget.challengeData.levels[_currentQuestionIndex].choices[0], screenWidth),
+                      _choiceButton(widget.challengeData.levels[_currentQuestionIndex].choices[1], screenWidth),
                     ],
                   ),
-                  _choiceButton(widget.questionsData[_currentQuestionIndex]['choices'][1], screenWidth),
+                  _choiceButton(widget.challengeData.levels[_currentQuestionIndex].choices[2], screenWidth),
                 ],
               ),
             ),
@@ -249,7 +250,7 @@ class _LevelState extends State<Level> {
 
 
   void _checkAnswer() {
-    bool isCorrect = _selectedChoice == widget.questionsData[_currentQuestionIndex]['correctChoice'];
+    bool isCorrect = _selectedChoice == widget.challengeData.levels[_currentQuestionIndex].correctChoice;
     if (isCorrect) {
       _correctAnswersCount++;
     }
@@ -258,8 +259,8 @@ class _LevelState extends State<Level> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => ChallengeResult(
-            levelNumber:1,
+          builder: (context) => ChallengeResultScreen(
+            levelNumber:  int.parse(widget.challengeData.challengeID),
             numberOfStars: _correctAnswersCount,
 
           ),
@@ -268,7 +269,7 @@ class _LevelState extends State<Level> {
     }
 
     void goToNextOrResult() {
-      if (_currentQuestionIndex == widget.questionsData.length - 1) {
+      if (_currentQuestionIndex == widget.challengeData.levels.length - 1) {
         // After the third question, show the ChallengeResult
         navigateToResult();
       } else {
