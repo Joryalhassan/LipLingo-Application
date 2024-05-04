@@ -26,7 +26,8 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.Swe.liplingo"
-    compileSdkVersion flutter.compileSdkVersion
+    //Update compileSdkVersion so camera can work
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -47,7 +48,9 @@ android {
         applicationId "com.Swe.liplingo"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        
+        //Update minSdkVersion so camera can work
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
