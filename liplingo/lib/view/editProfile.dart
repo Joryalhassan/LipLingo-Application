@@ -1,50 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../view/help.dart';
+import 'SignIn.dart';
+import 'editProfile.dart';
+import '../utils/reusableWidgets.dart';
 import '../controller/userController.dart';
-import '../view/accountSettings.dart';
 import '../model/userModel.dart';
 
-class EditProfileScreen extends StatefulWidget {
-  final Users userData;
-
-  const EditProfileScreen({Key? key, required this.userData}) : super(key: key);
-
-  @override
-  _EditProfileScreenState createState() => _EditProfileScreenState();
-}
-
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class AccountSettingsScreen extends StatelessWidget {
+  //Initialize Controller
   UserController _userController = new UserController();
-  late Size mediaSize;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _fnameTextController = TextEditingController();
-  final TextEditingController _lnameTextController = TextEditingController();
-  late String _userEmail;
-  late String _originalFirstName;
-  late String _originalLastName;
-  bool _changesMade = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _setUserData();
-  }
-
-  void _setUserData() {
-    setState(() {
-      _userEmail = widget.userData.email;
-      _fnameTextController.text = widget.userData.firstName;
-      _lnameTextController.text = widget.userData.lastName;
-
-      _originalFirstName = _fnameTextController.text;
-      _originalLastName = _lnameTextController.text;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    mediaSize = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         elevation: 0.8,
         toolbarHeight: 60,
@@ -53,334 +22,267 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.blue),
         title: Text(
-          'Edit Profile',
+          'Account Settings',
           style: TextStyle(color: Colors.black),
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
+      child: Container(
+        color: Colors.grey[200], // Set background color for the body
+        child: Center(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 38, vertical: 45),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center content vertically
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // User Photo, Username, and Edit Profile Button
+                _buildUserProfileSection(context),
+
+                // Space
+                SizedBox(height: 60),
+
+                // Clickable Options - Reset Password, Clear Text Data, Contact Us, Help
+                _buildClickableOption(
+                    context, 'Reset Password', Icons.lock_reset_sharp, () => _showPasswordConfirmation(context)),
+                SizedBox(height: 16), // Add space between options
+                _buildClickableOption(context, 'Clear Text Data', Icons.clear,
+                    () => _confirmDeleteSavedTextList(context)),
+                SizedBox(height: 16), // Add space between options
+                _buildClickableOption(
+                    context, 'Contact Us', Icons.mail, _onContactUs),
+                SizedBox(height: 16), // Add space between options
+                _buildClickableOption(
+                    context, 'Help', Icons.help, () => _onHelp(context)),
+                // Space
+                SizedBox(height: 60),
+
+                // Clickable Options - Log Out, Delete Account
+                _buildClickableOption(context, 'Log Out', Icons.logout,
+                    () => confirmLogout(context)),
+
+                SizedBox(height: 16), // Add space between options
+                _buildClickableOption(context, 'Delete Account', Icons.delete,
+                    () => _confirmAccountDeletion(context)),
+              ],
+            ),
+          ),
+        ),
+      ),
+      ),
+    );
+  }
+
+  Widget _buildUserProfileSection(BuildContext context) {
+    return FutureBuilder<Users?>(
+      future: _userController.getProfile(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator(); // Placeholder for loading state
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          var _userData = snapshot.data;
+          String username =
+              (_userData!.firstName + " " + _userData.lastName) ?? 'Full Name';
+
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditProfileScreen(
+                          userData: _userData,
+                        )),
+              );
+            },
+            child: Container(
+              padding: EdgeInsets.all(26),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.0),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Row(
                 children: [
-                  SizedBox(height: 15),
-                  _buildEditableFormField('First Name', _fnameTextController),
-                  _buildEditableFormField('Last Name', _lnameTextController),
-                  _buildNonEditableFormField('Email', _userEmail),
-                  _buildNonEditablePasswordField('Password'),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: AssetImage('assets/AppBar_Profile.png'),
+                  ),
+                  SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: 145,
-                        height: 45,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (_changesMade) {
-                              _showDiscardChangesDialog();
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Text(
-                            "Cancel",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
+                      Text(
+                        username,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(width: 16),
-                      SizedBox(
-                        width: 145,
-                        height: 45,
-                        child: ElevatedButton(
-                          onPressed: _checkEditProfile,
-                          child: Text(
-                            "Save Changes",
-                            style: TextStyle(fontSize: 15),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Edit Profile',
+                        style: TextStyle(color: Colors.blue),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-          ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildClickableOption(BuildContext context, String text, IconData icon,
+      VoidCallback onTapCallback) {
+    Color textColor = Colors.black; // Default text color
+    Color iconColor = Colors.black; // Default icon color
+
+    // Customize text and icon colors for "Delete Account" and "Log Out"
+    if (text == 'Delete Account' || text == 'Log Out') {
+      textColor = Colors.red;
+      iconColor = Colors.red;
+    }
+
+    return GestureDetector(
+      onTap: onTapCallback,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.0),
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              color: iconColor, // Set icon color
+            ),
+            SizedBox(width: 16),
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 18,
+                color: textColor, // Set text color
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildEditableFormField(
-      String _label, TextEditingController _controller) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          _label + ': ',
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 3),
-        TextFormField(
-          maxLength: 32,
-          controller: _controller,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
+  void _onContactUs() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'lipLingo@gmail.com',
+      queryParameters: {'subject': 'Contact Us'},
+    );
 
-          // Validate while typing
-          validator: (value) {
-            if (value!.isEmpty) {
-              return '$_label is required';
-            } else if (!RegExp(r'^[a-zA-Z]+$').hasMatch(value)) {
-              return 'Please enter a valid ' + _label.toLowerCase();
-            }
-            return null;
-          },
-          onChanged: (_) {
-            setState(() {
-              _changesMade = true;
-            });
-          },
-          decoration: InputDecoration(
-            counter: Text(
-              '',
-              style: TextStyle(
-                fontSize: 3,
-              ),
-            ),
-            filled: true,
-            fillColor: Colors.white,
-            hintText: 'Enter your $_label',
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          ),
-          style: TextStyle(fontSize: 14),
-        ),
-      ],
+    final String emailUri = emailLaunchUri.toString();
+
+    try {
+      await launch(emailUri);
+    } catch (e) {
+      print('Error launching email client: $e');
+    }
+  }
+
+  void _onHelp(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => HelpScreen()),
     );
   }
 
-  Widget _buildNonEditableFormField(String _label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          _label + ':',
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 3),
-        TextFormField(
-          initialValue: value,
-          enabled: false,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          ),
-          style: TextStyle(fontSize: 14),
-        ),
-      ],
-    );
-  }
+  void _confirmAccountDeletion(BuildContext context) {
+    DialogUtils.displayCustomDialog(
+      context,
+      title: 'Confirm Deletion?',
+      content: 'Are you sure you would like to delete your account?',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      onConfirm: () {
+        try {
+          //Delete account and navigate to sign in screen
+          _userController.deleteAccount();
+          Navigator.of(context).pop();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    SignInScreen()), // Navigate to your SignIn screen
+          );
 
-  Widget _buildNonEditablePasswordField(String _label) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 10),
-        Text(
-          _label + ':',
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-          ),
-        ),
-        const SizedBox(height: 3),
-        GestureDetector(
-          onTap: () {
-            _showPasswordConfirmation();
-          },
-          child: AbsorbPointer(
-            child: TextFormField(
-              obscureText: true,
-              initialValue: "**********",
-              enabled: false,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              ),
-              style: TextStyle(fontSize: 14),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Account deleted successfully!"),
+              backgroundColor: Colors.green,
             ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  _showDiscardChangesDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(20.0), // Adjust the value as needed
-          ),
-          child: Container(
-              padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text("Discard Changes?",
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w700,
-                        )),
-                    const SizedBox(height: 10),
-                    Text("Are you sure you want to discard changes?",
-                        style: TextStyle(
-                          fontSize: 17,
-                        )),
-                    const SizedBox(height: 25),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        OutlinedButton(
-                          child: Text("Cancel",
-                              style: TextStyle(
-                                fontSize: 17,
-                              )),
-                          style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 25.0,
-                              vertical: 10.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            side: BorderSide(width: 1, color: Colors.blue),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 27.0,
-                              vertical: 10.0,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            backgroundColor: Colors.blue,
-                          ),
-                          child: Text("Discard",
-                              style: TextStyle(
-                                fontSize: 17,
-                              )),
-                          onPressed: () {
-                            _cancelChanges();
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      AccountSettingsScreen()),
-                            );
-                          },
-                        ),
-                      ],
-                    )
-                  ])),
-        );
+          );
+        } catch (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Unable to delete account."),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       },
     );
   }
 
-  void _cancelChanges() {
-    setState(() {
-      _fnameTextController.text = _originalFirstName;
-      _lnameTextController.text = _originalLastName;
-      _changesMade = false;
-    });
-  }
+  void _confirmDeleteSavedTextList(BuildContext context) {
+    DialogUtils.displayCustomDialog(
+      context,
+      title: 'Confirm Deletion?',
+      content: 'Are you sure you would like to delete all your saved texts?',
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      onConfirm: () {
+        try {
+          _userController.clearSavedTextList();
+          Navigator.of(context).pop();
 
-  void _checkEditProfile() {
-    if (_formKey.currentState!.validate()) {
-      try {
-        Users _userData = new Users('', _fnameTextController.text.trim(),
-            _lnameTextController.text.trim(), '', '');
-        _userController.editProfile(_userData);
-
-        setState(() {
-          _originalFirstName = _fnameTextController.text;
-          _originalLastName = _lnameTextController.text;
-          _changesMade = false;
-        });
-
-        //Success SnackBar
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Profile edited successfully!"),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Ensure correct path when user navigates back - prevents back button from going back and display old account information
-        Navigator.pop(context);
-        // Navigate back
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => AccountSettingsScreen()),
-        );
-      } catch (error) {
-        //Success SnackBar
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Unable to edit profile."),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Saved text list has been cleared!"),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Unable to delete saved text lists."),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+    );
   }
 
   //Update Password confirmation dialog
-  void _showPasswordConfirmation() {
+  void _showPasswordConfirmation(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) {
@@ -445,7 +347,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               )),
                           onPressed: () {
                             Navigator.pop(context);
-                            _userController.resetPassword(_userEmail);
+                            _userController.resetPassword("CurrentUser");
                             //Success SnackBar
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
