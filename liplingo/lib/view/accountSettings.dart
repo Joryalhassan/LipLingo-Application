@@ -26,7 +26,8 @@ class AccountSettingsScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
       ),
-      body: Container(
+      body: SingleChildScrollView(
+      child: Container(
         color: Colors.grey[200], // Set background color for the body
         child: Center(
           child: Padding(
@@ -42,16 +43,18 @@ class AccountSettingsScreen extends StatelessWidget {
                 // Space
                 SizedBox(height: 60),
 
-                // Clickable Options - Clear Text Data, Contact Us, Help
+                // Clickable Options - Reset Password, Clear Text Data, Contact Us, Help
+                _buildClickableOption(
+                    context, 'Reset Password', Icons.lock_reset_sharp, () => _showPasswordConfirmation(context)),
+                SizedBox(height: 16), // Add space between options
                 _buildClickableOption(context, 'Clear Text Data', Icons.clear,
-                    () => confirmDeleteSavedTextList(context)),
+                    () => _confirmDeleteSavedTextList(context)),
                 SizedBox(height: 16), // Add space between options
                 _buildClickableOption(
                     context, 'Contact Us', Icons.mail, _onContactUs),
                 SizedBox(height: 16), // Add space between options
                 _buildClickableOption(
                     context, 'Help', Icons.help, () => _onHelp(context)),
-
                 // Space
                 SizedBox(height: 60),
 
@@ -61,11 +64,12 @@ class AccountSettingsScreen extends StatelessWidget {
 
                 SizedBox(height: 16), // Add space between options
                 _buildClickableOption(context, 'Delete Account', Icons.delete,
-                    () => confirmAccountDeletion(context)),
+                    () => _confirmAccountDeletion(context)),
               ],
             ),
           ),
         ),
+      ),
       ),
     );
   }
@@ -210,7 +214,7 @@ class AccountSettingsScreen extends StatelessWidget {
     );
   }
 
-  void confirmAccountDeletion(BuildContext context) {
+  void _confirmAccountDeletion(BuildContext context) {
     DialogUtils.displayCustomDialog(
       context,
       title: 'Confirm Deletion?',
@@ -247,7 +251,7 @@ class AccountSettingsScreen extends StatelessWidget {
     );
   }
 
-  void confirmDeleteSavedTextList(BuildContext context) {
+  void _confirmDeleteSavedTextList(BuildContext context) {
     DialogUtils.displayCustomDialog(
       context,
       title: 'Confirm Deletion?',
@@ -273,6 +277,90 @@ class AccountSettingsScreen extends StatelessWidget {
             ),
           );
         }
+      },
+    );
+  }
+
+  //Update Password confirmation dialog
+  void _showPasswordConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+            BorderRadius.circular(20.0), // Adjust the value as needed
+          ),
+          child: Container(
+              padding: EdgeInsets.fromLTRB(30, 35, 30, 30),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("Reset Password?",
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w700,
+                        )),
+                    const SizedBox(height: 10),
+                    Text("For security reasons, we will have to send a link to change your password to your email address.",
+                        style: TextStyle(
+                          fontSize: 17,
+                        )),
+                    const SizedBox(height: 25),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        OutlinedButton(
+                          child: Text("Cancel",
+                              style: TextStyle(
+                                fontSize: 17,
+                              )),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 25.0,
+                              vertical: 10.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            side: BorderSide(width: 1, color: Colors.blue),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 20.0,
+                              vertical: 10.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            backgroundColor: Colors.blue,
+                          ),
+                          child: Text("Send Email",
+                              style: TextStyle(
+                                fontSize: 17,
+                              )),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _userController.resetPassword("CurrentUser");
+                            //Success SnackBar
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Reset password email sent!"),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    )
+                  ])),
+        );
       },
     );
   }
