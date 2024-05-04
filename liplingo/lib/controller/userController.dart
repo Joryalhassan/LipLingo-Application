@@ -6,7 +6,6 @@ import '../view/SignIn.dart';
 import '../view/lipReading.dart';
 
 class UserController {
-
   //Initialize Firebase
   FirebaseFirestore _database = FirebaseFirestore.instance;
   final _user = FirebaseAuth.instance.currentUser;
@@ -66,8 +65,8 @@ class UserController {
   }
 
   //Sign in - SignInScreen
-  Future<String?> signIn(BuildContext context, String _email, String _password) async {
-
+  Future<String?> signIn(
+      BuildContext context, String _email, String _password) async {
     String? _message = null;
 
     try {
@@ -98,10 +97,17 @@ class UserController {
 
   //Reset password - ResetPasswordScreen
   Future<String?> resetPassword(String email) async {
-
     String? _message = null;
 
     try {
+      if (email == "CurrentUser") {
+
+        String _currentUserEmail = _user?.email ?? 'null';
+
+        await _auth.sendPasswordResetEmail(
+          email: _currentUserEmail,
+        );
+      }
       // Check if the email exists
       bool emailExists = await _checkEmailUnique(email);
 
@@ -132,7 +138,6 @@ class UserController {
 
   //Register new account - Sign Up Page
   Future<String?> signUp(BuildContext context, Users _userInfo) async {
-
     //Return Message
     String? _message = null;
 
