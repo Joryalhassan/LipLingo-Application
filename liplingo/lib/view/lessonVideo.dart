@@ -35,6 +35,7 @@ class _LessonVideState extends State<LessonVideoScreen> {
   @override
   void dispose() {
     super.dispose();
+    flickManager.dispose();
   }
 
   @override
