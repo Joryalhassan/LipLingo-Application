@@ -15,15 +15,20 @@ class AccountSettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0.8,
-        toolbarHeight: 60,
-        leadingWidth: 75,
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.blue),
         title: Text(
           'Account Settings',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.blue,
+          onPressed: () {
+            Navigator.pop(context);
+          }
         ),
       ),
       body: SingleChildScrollView(
