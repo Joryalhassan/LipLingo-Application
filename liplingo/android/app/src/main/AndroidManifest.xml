@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" 
         package="com.Swe.liplingo">
     <application
-        android:label="liplingo"
+        android:label="LipLingo"
         android:name="androidx.multidex.MultiDexApplication"
         android:icon="@mipmap/ic_launcher"
         >
