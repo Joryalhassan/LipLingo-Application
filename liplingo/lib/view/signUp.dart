@@ -159,7 +159,7 @@ class _SignUpState extends State<SignUpScreen> {
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  await checkSignUp;
+                                  await checkSignUp();
                                 },
                                 child: Text(
                                   "Register",
