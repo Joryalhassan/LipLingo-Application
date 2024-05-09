@@ -18,10 +18,7 @@ class HelpScreen extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
           color: Colors.blue,
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AccountSettingsScreen()),
-            );
+            Navigator.pop(context);
           },
         ),
       ),
