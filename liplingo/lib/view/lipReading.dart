@@ -379,7 +379,7 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
             context,
             MaterialPageRoute(
               fullscreenDialog: true,
-              builder: (_) => VideoPreviewScreen(filePath: _feedback),
+              builder: (_) => VideoPreviewScreen(filePath: _feedback, isUploaded: true),
             ));
       }
     } catch (error) {
@@ -560,7 +560,7 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
       });
       final route = MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (_) => VideoPreviewScreen(filePath: file.path),
+        builder: (_) => VideoPreviewScreen(filePath: file.path, isUploaded: false),
       );
       stopTimer();
       Navigator.push(context, route);
