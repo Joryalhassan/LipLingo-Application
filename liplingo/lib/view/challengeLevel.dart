@@ -74,16 +74,9 @@ class _LevelState extends State<ChallengeLevelScreen> {
   }
 
   double get _progressValue {
-    // Adjust the formula to match the custom progression logic
-    switch (0) {
-      case 0:
-        return 0; // For the first question, 0%
-      case 1:
-        return 1 / 3; // For the second question, 33%
-      default:
-        return 2 / 3; // For the third question, 66%
-    }
+    return (_currentQuestionIndex)/3;
   }
+
 
   List<Widget> _buildStars(BuildContext context) {
     // Determine how many stars should be colored based on _correctAnswersCount
