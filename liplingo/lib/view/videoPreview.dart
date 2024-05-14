@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:liplingo/controller/aiController.dart';
 import 'package:liplingo/view/viewText.dart';
 import 'package:video_player/video_player.dart';
+import 'lipReading.dart';
 
 class VideoPreviewScreen extends StatefulWidget {
   final String filePath;
+  final bool isUploaded;
 
-  const VideoPreviewScreen({Key? key, required this.filePath})
+  const VideoPreviewScreen(
+      {Key? key, required this.filePath, required this.isUploaded})
       : super(key: key);
 
   @override
@@ -29,6 +32,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
     await _videoPlayerController.initialize();
     await _videoPlayerController.setLooping(true);
     await _videoPlayerController.play();
+    await _videoPlayerController.setVolume(0.0);
   }
 
   @override
@@ -56,6 +60,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
             ),
             onPressed: () async {
               _videoPlayerController.pause();
+              _processingVideoWidget();
               await sendVideo();
             },
           ),
@@ -94,10 +99,122 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
   }
 
   Future<void> sendVideo() async {
-    String translatedText =
-        await _aiController.interpretToText(File(widget.filePath));
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) =>
-            ViewTextScreen(translatedText: translatedText)));
+    try {
+
+      String translatedText = await _aiController.interpretToText(
+          File(widget.filePath), widget.isUploaded);
+      Navigator.pop(context);
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              ViewTextScreen(translatedText: translatedText)));
+
+    } catch (error) {
+
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => LipReadingScreen()));
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(20.0), // Adjust the value as needed
+            ),
+            child: Container(
+              padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Interpretation Error",
+                    style: TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "Unable to detect a lip region to interpret. Please try again.",
+                    style: TextStyle(
+                      fontSize: 17,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 27.0,
+                          vertical: 10.0,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        backgroundColor: Colors.blue,
+                      ),
+                      child: Text(
+                        "Ok",
+                        style: TextStyle(
+                          fontSize: 17,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void _processingVideoWidget() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(30, 35, 30, 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Processing Video...",
+                  style: TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.blue),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "This might take a few seconds. We appreciate your patience.",
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 15),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
