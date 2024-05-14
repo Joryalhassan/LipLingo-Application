@@ -314,7 +314,10 @@ class _LipReadingScreenState extends State<LipReadingScreen> {
   void _checkUploadVideo() async {
     try{
       String _feedback = await _videoController.uploadVideo(context);
-      if(_feedback == "Exceeds duration"){
+      if (_feedback == "No Video Selected") {
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => LipReadingScreen()));
+      } else if(_feedback == "Exceeds duration"){
         showDialog(
           context: context,
           builder: (BuildContext context) {
