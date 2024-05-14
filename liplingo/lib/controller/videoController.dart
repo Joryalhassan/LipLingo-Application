@@ -9,9 +9,9 @@ class VideoController {
   final ImagePicker _picker = ImagePicker();
 
   void recordVideo(){
-      //Must be separated from view
-      //Tried to separate but performance was severely affected (It took 2 seconds to start recording after pressing record button)
-      //Will return after report is complete
+    //Must be separated from view
+    //Tried to separate but performance was severely affected (It took 2 seconds to start recording after pressing record button)
+    //Will return after report is complete
   }
 
   Future<String> uploadVideo(BuildContext context) async {
@@ -32,10 +32,13 @@ class VideoController {
         } else {
           _feedback = pickedFile.path;
         }
+      } else {
+        _feedback = 'No Video Selected';
       }
     } on PlatformException {
       throw PlatformException;
     }
     return _feedback;
   }
+
 }
