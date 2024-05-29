@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:liplingo/controller/aiController.dart';
 import 'package:liplingo/view/viewText.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'lipReading.dart';
 
 class VideoPreviewScreen extends StatefulWidget {
@@ -20,6 +22,7 @@ class VideoPreviewScreen extends StatefulWidget {
 class _VideoPreviewPageState extends State<VideoPreviewScreen> {
   late VideoPlayerController _videoPlayerController;
   AIController _aiController = new AIController();
+  final FaceDetector faceDetector = GoogleMlKit.vision.faceDetector();
 
   @override
   void dispose() {
@@ -60,8 +63,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
             ),
             onPressed: () async {
               _videoPlayerController.pause();
-              _processingVideoWidget();
-              await sendVideo();
+              await detectFaces(File(widget.filePath));
             },
           ),
           IconButton(
@@ -98,9 +100,49 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
     );
   }
 
+  // Extract the first frame as an image
+  Future<void> detectFaces(File videoFile) async {
+    try {
+      print('Starting face detection...');
+
+      // Run ffmpeg command to extract first frame
+      final FlutterFFmpeg _flutterFFmpeg = FlutterFFmpeg();
+      final Directory tempDir = Directory.systemTemp;
+      final String tempImagePath = '${tempDir.path}/first_frame.jpg';
+
+      await _flutterFFmpeg.execute(
+          '-i ${videoFile.path} -vframes 1 $tempImagePath');
+
+      print('First frame extracted successfully.');
+
+      // Load first frame as input image
+      final inputImage = InputImage.fromFilePath(tempImagePath);
+
+      // Detect faces in the input image
+      final List<Face> faces = await faceDetector.processImage(inputImage);
+
+      if (faces.isNotEmpty) {
+        print('Faces detected: ${faces.length}');
+
+        // Proceed with further actions
+        _processingVideoWidget();
+        await sendVideo();
+      } else {
+        print('No faces detected.');
+        _errorMessage();
+      }
+
+      // Delete temporary image file
+      File(tempImagePath).deleteSync();
+    } catch (e) {
+      print('Error during face detection: $e');
+      _errorMessage();
+    }
+  }
+
+  //Send video to AI
   Future<void> sendVideo() async {
     try {
-
       String translatedText = await _aiController.interpretToText(
           File(widget.filePath), widget.isUploaded);
       Navigator.pop(context);
@@ -109,17 +151,15 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
               ViewTextScreen(translatedText: translatedText)));
 
     } catch (error) {
-
       Navigator.of(context)
           .push(MaterialPageRoute(builder: (context) => LipReadingScreen()));
-
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius:
-                  BorderRadius.circular(20.0), // Adjust the value as needed
+              BorderRadius.circular(20.0), 
             ),
             child: Container(
               padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
@@ -128,7 +168,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Interpretation Error",
+                    "Server Error",
                     style: TextStyle(
                       fontSize: 23,
                       fontWeight: FontWeight.w700,
@@ -136,7 +176,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    "Unable to detect a lip region to interpret. Please try again.",
+                    "There's been an error reaching the server. Please try again.",
                     style: TextStyle(
                       fontSize: 17,
                     ),
@@ -175,6 +215,7 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
     }
   }
 
+  //Loading widget
   void _processingVideoWidget() {
     showDialog(
       context: context,
@@ -210,6 +251,71 @@ class _VideoPreviewPageState extends State<VideoPreviewScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 15),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  //Error message
+  void _errorMessage(){
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => LipReadingScreen()));
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+            BorderRadius.circular(20.0), // Adjust the value as needed
+          ),
+          child: Container(
+            padding: EdgeInsets.fromLTRB(40, 35, 40, 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Interpretation Error",
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Unable to detect a lip region to interpret. Please try again.",
+                  style: TextStyle(
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 27.0,
+                        vertical: 10.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: Text(
+                      "Ok",
+                      style: TextStyle(
+                        fontSize: 17,
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
               ],
             ),
           ),
