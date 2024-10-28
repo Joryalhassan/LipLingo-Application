@@ -1,5 +1,4 @@
-# Project Title:
-LipLingo
+# LipLingo
 
 # Project Collaborators:
 - **Jory Alhassan**
