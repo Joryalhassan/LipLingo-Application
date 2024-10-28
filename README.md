@@ -9,7 +9,7 @@ LipLingo
 - **Danh Alkhalaf**
 
 # Description:
-LipLingo is an Android application developed for a graduation project that interprets lip movements into text. It allows users to record, upload, and interpret lip movements into text, learn lip reading through lessons, and participate in challenges. The app is implemented using Flutter and Dart for the front-end, Python for the lip movement interpretation model, and Firestore for data storage.
+LipLingo is an Android application developed for a graduation project that interprets lip movements into text. It allows users to record, upload, and interpret lip movements into text, learn lip reading through lessons, and participate in challenges. The app is implemented using Flutter for the front-end, Python for the lip movement interpretation model, and Firestore for data storage.
 # Features
 - FR1: User registration with first name, last name, username, email, and password.
 - FR2: User login with either username or email and password.
