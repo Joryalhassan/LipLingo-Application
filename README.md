@@ -79,12 +79,10 @@ To set up and run LipLingo locally, follow these steps:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/NadaQQ/LipLingo.git
+   git clone https://github.com/NadaQQ/LipLingo-Application.git
    cd LipLingo
 2. **Set up the back-end Python environment:**
-Install required packages:
-   ```bash
-   pip install -r requirements.txt
+Install required packages.
 Configure the lip movement interpretation model.
 
 3. **Set up the Flutter front-end:**
