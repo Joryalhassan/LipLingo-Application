@@ -1,4 +1,5 @@
 # LipLingo
+![LipLingo Logo](logo.png)
 
 ## Overview
 **LipLingo** is an Android application designed to translate lip movements into text, supporting users with hearing or voice impairments in better communication. This application allows users to record, upload, and interpret lip movements into text and offers interactive lessons and challenges to learn lip reading. Developed as a graduation project, LipLingo combines deep learning with user-friendly mobile functionality to provide an accessible solution for lip reading and text interpretation.
