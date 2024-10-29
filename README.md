@@ -79,7 +79,7 @@ To set up and run LipLingo locally, follow these steps:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/LipLingo.git
+   git clone https://github.com/NadaQQ/LipLingo.git
    cd LipLingo
 2. **Set up the back-end Python environment:**
 Install required packages:
