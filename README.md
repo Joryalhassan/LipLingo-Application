@@ -98,7 +98,3 @@ Ensure you have a Firestore database set up and configure authentication for Flu
 Start the Flutter application on an emulator or a connected device:
   ```bash
    flutter run
-
-
-
-
