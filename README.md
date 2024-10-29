@@ -97,5 +97,5 @@ Ensure you have a Firestore database set up and configure authentication for Flu
 
 5. **Run the Application:**
 Start the Flutter application on an emulator or a connected device:
-  ```bash
+   ```bash
    flutter run
